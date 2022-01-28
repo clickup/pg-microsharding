@@ -13,7 +13,7 @@ RETURNS SETOF text LANGUAGE plpgsql AS $$
 DECLARE
   rec record;
 BEGIN
-  IF from_shard < 0 OR to_shard > 9999 OR from_shard > to_shard THEN
+  IF from_shard < 0 OR to_shard > 9999 THEN
     RAISE EXCEPTION 'Invalid from_shard or to_shard';
   END IF;
   FOR rec IN
