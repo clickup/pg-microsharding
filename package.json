@@ -1,0 +1,27 @@
+{
+  "name": "pg-sharding",
+  "description": "Maintains the desired number of PG schemas (shards) and allows to migrate them.",
+  "version": "2.10.23",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "dist/cli.js",
+  "types": "dist/cli.d.ts",
+  "bin": {
+    "pg-sharding": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc.sh",
+    "dev": "tight-loop.sh tsc.sh --watch",
+    "lint": "lint.sh",
+    "test": "test.sh",
+    "test:db": "set -e; for f in sql/__tests__/test_*.sql; do echo == $f; echo; yarn psql -f $f; echo; echo; done"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "delay": "^4.4.1",
+    "lodash": "^4.17.21",
+    "log-update": "^3.4.0",
+    "minimist": "^1.2.5",
+    "pg": "^8.7.1"
+  }
+}

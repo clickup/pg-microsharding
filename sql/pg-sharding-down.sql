@@ -1,0 +1,10 @@
+DROP FUNCTION _sharding_active_shards();
+DROP FUNCTION _sharding_ensure_active_shards(text[]);
+DROP FUNCTION _sharding_schema_name(integer);
+DROP FUNCTION sharding_debug_views_create(text);
+DROP FUNCTION sharding_debug_views_drop(text);
+DROP FUNCTION sharding_ensure_absent(integer, integer);
+DROP FUNCTION sharding_ensure_active(integer, integer);
+DROP FUNCTION sharding_ensure_exist(integer, integer);
+DROP FUNCTION sharding_ensure_inactive(integer, integer);
+DROP FUNCTION sharding_list_active_shards();

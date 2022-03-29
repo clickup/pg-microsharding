@@ -1,5 +1,8 @@
-CREATE OR REPLACE FUNCTION sharding_debug_views_create(dst_schema text = 'public') RETURNS SETOF text
+CREATE OR REPLACE FUNCTION sharding_debug_views_create(
+  dst_schema text = 'public'
+) RETURNS SETOF text
 LANGUAGE plpgsql
+SET search_path FROM CURRENT
 AS $$
 DECLARE
   rec record;
@@ -22,7 +25,7 @@ BEGIN
       array_agg(DISTINCT columns.column_name::text) AS columns
     FROM information_schema.columns
     WHERE 
-      columns.table_schema::text = ANY(sharding_list_shards())
+      columns.table_schema::text = ANY(sharding_list_active_shards())
       AND columns.table_name ~* '^[a-zA-Z0-9_]+$'
     GROUP BY columns.table_name
     HAVING NOT EXISTS(

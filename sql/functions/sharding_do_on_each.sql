@@ -1,12 +1,17 @@
-CREATE OR REPLACE FUNCTION sharding_do_on_each(cmd text, OUT shard text, out row_count text) RETURNS SETOF record
+CREATE OR REPLACE FUNCTION sharding_do_on_each(
+  cmd text,
+  OUT shard regnamespace,
+  OUT row_count text
+) RETURNS SETOF record
 LANGUAGE plpgsql
+SET search_path FROM CURRENT
 AS $$
 DECLARE
   sql text;
 BEGIN
   cmd := trim(cmd);
-  FOREACH shard IN ARRAY sharding_list_shards() LOOP
-    IF regexp_replace(shard, '[^0-9]', '', 'g')::integer <> 0 THEN
+  FOREACH shard IN ARRAY sharding_list_active_shards() LOOP
+    IF substring(shard from '\d+')::integer <> 0 THEN
       BEGIN
         PERFORM set_config('search_path', shard || ',public', true);
         EXECUTE cmd;
