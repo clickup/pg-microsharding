@@ -12,4 +12,4 @@ $$;
 COMMENT ON FUNCTION sharding_list_active_shards()
   IS 'Returns the list of active shards (schemas) which exist in this particular database. '
      'Only active shards are returned, and when copying a schema from one database to '
-     'another via pg_dump, the schema does not become active by defaul on the destination.';
+     'another via pg_dump, the schema does not become active by default on the destination.';
