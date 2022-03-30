@@ -5,16 +5,16 @@ LANGUAGE plpgsql
 SET search_path FROM CURRENT
 AS $$
 DECLARE
-  view_name text;
+  view_full_name text;
 BEGIN
-  FOR view_name IN
+  FOR view_full_name IN
     SELECT format('%I.%I', dst_schema, table_name)
     FROM information_schema.views
     WHERE table_schema = dst_schema
   LOOP
-    IF pg_catalog.obj_description(view_name::regclass) LIKE 'pg_sharding:%' THEN
-      EXECUTE format('DROP VIEW %I', view_name);
-      RETURN NEXT view_name;
+    IF pg_catalog.obj_description(view_full_name::regclass) LIKE 'pg_sharding:%' THEN
+      EXECUTE format('DROP VIEW %s', view_full_name);
+      RETURN NEXT view_full_name;
     END IF;
   END LOOP;
 END;
