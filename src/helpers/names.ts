@@ -1,8 +1,10 @@
 import shellQuote from "./shellQuote";
 
-export const pubName = (schema: string): string => `pg_move_${schema}_pub`;
+export const pubName = (schema: string): string =>
+  `pg_sharding_move_${schema}_pub`;
 
-export const subName = (schema: string): string => `pg_move_${schema}_sub`;
+export const subName = (schema: string): string =>
+  `pg_sharding_move_${schema}_sub`;
 
 export const pgDump = (fromDsn: string): string =>
   `pg_dump --schema-only ${shellQuote(fromDsn)}`;
