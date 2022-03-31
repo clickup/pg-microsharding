@@ -18,12 +18,15 @@ import wrapSigInt from "./helpers/wrapSigInt";
 
 const USAGE = [
   "Usage:",
-  "  pg-sharding move --shard=N --from=DSN --to=DSN [--activate-on-destination]",
+  "  pg-sharding move\\\n" +
+    "    --shard=N --from=DSN --to=DSN \\\n" +
+    "    [--activate-on-destination] \\\n" +
+    "    [--deactivate-script='SQL $1 SQL']",
 ];
 
 export async function main(argv: string[]): Promise<boolean> {
   const args = minimist(argv, {
-    string: ["shard", "from", "to"],
+    string: ["shard", "from", "to", "deactivate-script"],
     boolean: ["activate-on-destination"],
   });
 
@@ -50,8 +53,15 @@ export async function main(argv: string[]): Promise<boolean> {
     }
 
     const activateOnDestination = !!args["activate-on-destination"];
+    const deactivateScript = args["deactivate-script"] as string | undefined;
 
-    await move({ shard, fromDsn, toDsn, activateOnDestination });
+    await move({
+      shard,
+      fromDsn,
+      toDsn,
+      activateOnDestination,
+      deactivateScript,
+    });
     return true;
   }
 
@@ -64,11 +74,13 @@ async function move({
   fromDsn,
   toDsn,
   activateOnDestination,
+  deactivateScript,
 }: {
   shard: number;
   fromDsn: string;
   toDsn: string;
   activateOnDestination: boolean;
+  deactivateScript?: string;
 }): Promise<void> {
   process.env.PGOPTIONS = compact([
     "--client-min-messages=warning",
@@ -108,7 +120,6 @@ async function move({
       );
       await advanceSequences({ fromDsn, toDsn });
       throwIfAborted();
-      await resultCommit({ activateOnDestination, fromDsn, toDsn, schema });
     });
   } catch (e) {
     log(chalk.red("" + e));
@@ -117,6 +128,20 @@ async function move({
     await delay(1000);
     await resultAbort({ fromDsn, toDsn, schema });
     throw "Exited abnormally";
+  }
+
+  try {
+    await resultCommit({
+      activateOnDestination,
+      deactivateScript,
+      fromDsn,
+      toDsn,
+      schema,
+    });
+  } catch (e) {
+    log(chalk.red("" + e));
+    log("");
+    throw "DANGER! Exited abnormally while committing the result! Shard is in half-working state.";
   }
 }
 

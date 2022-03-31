@@ -1,4 +1,5 @@
 import cleanUpPubSub from "./cleanUpPubSub";
+import getTablesInSchema from "./getTablesInSchema";
 import { libSchema, psql, schemaNew, schemaOld, shardNo } from "./names";
 import runShell from "./runShell";
 
@@ -7,15 +8,19 @@ import runShell from "./runShell";
  */
 export default async function resultCommit({
   activateOnDestination,
+  deactivateScript,
   fromDsn,
   toDsn,
   schema,
 }: {
   activateOnDestination: boolean;
+  deactivateScript?: string;
   fromDsn: string;
   toDsn: string;
   schema: string;
 }): Promise<void> {
+  const tables = await getTablesInSchema({ fromDsn, schema });
+
   await cleanUpPubSub({ fromDsn, toDsn, schema, quiet: false });
 
   if (activateOnDestination) {
@@ -32,6 +37,19 @@ export default async function resultCommit({
         psql(toDsn),
         `SELECT ${libSchema()}.sharding_ensure_active(${shard})`,
         "Activating shard on the destination"
+      );
+    }
+
+    if (deactivateScript && tables.length > 0) {
+      await runShell(
+        psql(fromDsn),
+        tables
+          .map(
+            (table) =>
+              deactivateScript.replace(/\$1/g, `'${schema}.${table}'`) + ";"
+          )
+          .join("\n"),
+        `Running custom deactivation script for shard tables`
       );
     }
   } else {
