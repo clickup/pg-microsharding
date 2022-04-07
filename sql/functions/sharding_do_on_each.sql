@@ -11,7 +11,7 @@ DECLARE
 BEGIN
   cmd := trim(cmd);
   FOREACH shard IN ARRAY sharding_list_active_shards() LOOP
-    IF substring(shard from '\d+')::integer <> 0 THEN
+    IF substring(shard::text from '\d+')::integer <> 0 THEN
       BEGIN
         PERFORM set_config('search_path', shard || ',public', true);
         EXECUTE cmd;

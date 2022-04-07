@@ -3,6 +3,7 @@ DROP FUNCTION _sharding_ensure_active_shards(text[]);
 DROP FUNCTION _sharding_schema_name(integer);
 DROP FUNCTION sharding_debug_views_create(text);
 DROP FUNCTION sharding_debug_views_drop(text);
+DROP FUNCTION sharding_do_on_each(text);
 DROP FUNCTION sharding_ensure_absent(integer, integer);
 DROP FUNCTION sharding_ensure_active(integer, integer);
 DROP FUNCTION sharding_ensure_exist(integer, integer);
