@@ -34,11 +34,11 @@ export default async function waitUntilIncrementalCompletes(
       ? { rejectUnauthorized: false }
       : undefined,
     application_name: "waitUntilIncrementalCompletes",
-    statement_timeout: 0,
   });
   try {
     await client.connect();
     await client.query("BEGIN");
+    await client.query("SET statement_timeout TO 0");
     await client.query(`SET search_path TO ${schema}`);
     throwIfAborted();
 
