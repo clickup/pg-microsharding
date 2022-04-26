@@ -16,12 +16,10 @@ export default async function startCopyingTables({
   schema: string;
 }): Promise<string[]> {
   const tables = await getTablesInSchema({ fromDsn, schema });
+  const tablesFull = tables.map((table) => `${schema}.${table}`);
   await runShell(
     psql(fromDsn),
-    [
-      `SET search_path TO ${schema}`,
-      `CREATE PUBLICATION ${pubName(schema)} FOR TABLE ${tables.join(",")}`,
-    ].join("; "),
+    `CREATE PUBLICATION ${pubName(schema)} FOR TABLE ${tablesFull.join(",")}`,
     "Creating source publication"
   );
   // We create the replication slot separately only to be able to test the tool

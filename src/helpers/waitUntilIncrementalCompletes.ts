@@ -38,8 +38,8 @@ export default async function waitUntilIncrementalCompletes(
   try {
     await client.connect();
     await client.query("BEGIN");
-    await client.query("SET statement_timeout TO 0");
-    await client.query(`SET search_path TO ${schema}`);
+    await client.query("SET LOCAL statement_timeout TO 0");
+    await client.query(`SET LOCAL search_path TO ${schema}`);
     throwIfAborted();
 
     progress("Locking source tables for write...");
