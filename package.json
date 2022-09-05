@@ -1,7 +1,7 @@
 {
   "name": "pg-sharding",
   "description": "Maintains the desired number of PG schemas (shards) and allows to migrate them.",
-  "version": "2.10.254",
+  "version": "2.10.280",
   "license": "UNLICENSED",
   "private": true,
   "main": "dist/cli.js",
