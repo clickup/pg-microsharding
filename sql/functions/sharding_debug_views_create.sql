@@ -24,7 +24,7 @@ BEGIN
       array_agg(DISTINCT columns.table_schema::text) AS schemas,
       array_agg(DISTINCT columns.column_name::text) AS columns
     FROM information_schema.columns
-    WHERE 
+    WHERE
       columns.table_schema::regnamespace = ANY(sharding_list_active_shards())
       AND columns.table_name ~* '^[a-zA-Z0-9_]+$'
     GROUP BY columns.table_name

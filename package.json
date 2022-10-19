@@ -13,7 +13,6 @@
     "build": "tsc.sh",
     "dev": "tight-loop.sh tsc.sh --watch",
     "lint": "lint.sh",
-    "test": "test.sh",
     "test:db": "set -e; for f in sql/__tests__/test_*.sql; do echo == $f; echo; yarn psql -f $f; echo; echo; done"
   },
   "dependencies": {
