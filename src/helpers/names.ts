@@ -20,3 +20,5 @@ export const schemaOld = (schema: string): string => `${schema}old`;
 export const schemaNew = (schema: string): string => `${schema}new`;
 
 export const libSchema = (): string => "sharding";
+
+export const dsnToHost = (dsn: string): string => new URL(dsn).hostname;

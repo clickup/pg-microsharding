@@ -1,4 +1,4 @@
-import { pgDump, psql } from "./names";
+import { dsnToHost, pgDump, psql } from "./names";
 import runShell from "./runShell";
 
 /**
@@ -16,6 +16,7 @@ export default async function copyDDL({
   await runShell(
     `${pgDump(fromDsn)} -n ${schema} | ${psql(toDsn)} --single-transaction`,
     null,
-    "Copying DDL..."
+    `Copying DDL for ${schema} ` +
+      `from ${dsnToHost(fromDsn)} to ${dsnToHost(toDsn)}...`
   );
 }

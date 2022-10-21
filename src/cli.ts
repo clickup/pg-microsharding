@@ -15,6 +15,9 @@ import startCopyingTables from "./helpers/startCopyingTables";
 import waitUntilBackfillCompletes from "./helpers/waitUntilBackfillCompletes";
 import waitUntilIncrementalCompletes from "./helpers/waitUntilIncrementalCompletes";
 import wrapSigInt from "./helpers/wrapSigInt";
+import rebalance from "./rebalance";
+
+export { rebalance };
 
 const USAGE = [
   "Usage:",
