@@ -31,7 +31,7 @@ BEGIN
     HAVING NOT EXISTS(
       SELECT 1 FROM information_schema.tables t
       WHERE t.table_schema = dst_schema
-        AND t.table_name = table_name
+        AND t.table_name = columns.table_name
         AND t.table_type = 'VIEW'
     )
   LOOP
