@@ -31,6 +31,13 @@ export default async function runShell(
         shell: "/bin/bash",
         stdio: [undefined, undefined, "inherit"],
         input: input ?? undefined,
+        env: {
+          ...process.env,
+          PGOPTIONS: compact([
+            "--client-min-messages=warning",
+            process.env.PGOPTIONS,
+          ]).join(" "),
+        },
       })
         .toString()
         .split("\n")

@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import delay from "delay";
-import compact from "lodash/compact";
 import first from "lodash/first";
 import minimist from "minimist";
 import advanceSequences from "./helpers/advanceSequences";
@@ -85,11 +84,6 @@ async function move({
   activateOnDestination: boolean;
   deactivateScript?: string;
 }): Promise<void> {
-  process.env.PGOPTIONS = compact([
-    "--client-min-messages=warning",
-    process.env.PGOPTIONS,
-  ]).join(" ");
-
   const schema = first(
     await runShell(
       psql(fromDsn),
