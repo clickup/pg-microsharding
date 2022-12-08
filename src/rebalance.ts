@@ -1,3 +1,4 @@
+import difference from "lodash/difference";
 import range from "lodash/range";
 import sumBy from "lodash/sumBy";
 
@@ -9,10 +10,12 @@ export interface Move<TDB, TShard> {
 
 /**
  * Returns shards rebalance plan for the client to execute to distribute shards
- * evenly across databases.
+ * evenly across databases. If a DB is passed in decommissionDBs, then all the
+ * shards from it will be migrated out.
  */
 export default function rebalance<TDB, TShard>(
-  shardsByDBs: ReadonlyMap<TDB, TShard[]>
+  shardsByDBs: ReadonlyMap<TDB, TShard[]>,
+  decommissionDBs: TDB[] = []
 ): {
   shardsByDBs: ReadonlyMap<TDB, TShard[]>;
   moves: Array<Move<TDB, TShard>>;
@@ -23,9 +26,19 @@ export default function rebalance<TDB, TShard>(
     needShards: 0,
     shards: [...shards],
   }));
-  const chunks = evenChunks(range(0, numShards), shardsByDBs.size);
-  for (const [i, chunk] of chunks.entries()) {
-    map[i].needShards = chunk.length;
+
+  const finalDBs = difference([...shardsByDBs.keys()], decommissionDBs);
+  if (shardsByDBs.size > 0 && finalDBs.length === 0) {
+    throw Error(
+      "You can't decommission all of the DBs, at least one should remain"
+    );
+  }
+
+  const chunks = evenChunks(range(0, numShards), finalDBs.length);
+  for (const entry of map) {
+    entry.needShards = decommissionDBs.includes(entry.db)
+      ? 0
+      : chunks.shift()!.length;
   }
 
   const moves: Array<Move<TDB, TShard>> = [];
