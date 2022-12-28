@@ -20,5 +20,5 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_debug_views_create(text)
+COMMENT ON FUNCTION sharding_debug_views_drop(text)
   IS 'Drops all debug views previously created.';

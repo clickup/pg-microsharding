@@ -1,10 +1,13 @@
+DROP FUNCTION IF EXISTS sharding_debug_views_create(text);
 CREATE OR REPLACE FUNCTION sharding_debug_views_create(
-  dst_schema text = 'public'
+  dst_schema text = 'public',
+  fdw_dst_prefix text = NULL
 ) RETURNS SETOF text
 LANGUAGE plpgsql
 SET search_path FROM CURRENT
 AS $$
 DECLARE
+  schemas regnamespace[];
   rec record;
   view_name text;
   selects text[];
@@ -15,6 +18,12 @@ DECLARE
   hash text;
   existing_hash text;
 BEGIN
+  IF fdw_dst_prefix IS NOT NULL THEN
+    schemas := _sharding_debug_fdw_schemas(fdw_dst_prefix);
+  ELSE
+    schemas := sharding_list_active_shards();
+  END IF;
+
   -- Iterate over all tables; for each table collect all schemas it's in and
   -- also the outer list of columns in all schemas for this table.
   FOR rec IN
@@ -25,7 +34,7 @@ BEGIN
       array_agg(DISTINCT columns.column_name::text) AS columns
     FROM information_schema.columns
     WHERE
-      columns.table_schema::regnamespace = ANY(sharding_list_active_shards())
+      columns.table_schema::regnamespace = ANY(schemas)
       AND columns.table_name ~* '^[a-zA-Z0-9_]+$'
     GROUP BY columns.table_name
     HAVING NOT EXISTS(
@@ -51,7 +60,11 @@ BEGIN
     LOOP
       selects := array_append(selects, format(
         '  SELECT %L, %s FROM %I.%I',
-        schema,
+        CASE
+          WHEN starts_with(schema, fdw_dst_prefix)
+          THEN substr(schema, 2 + length(fdw_dst_prefix))
+          ELSE schema
+        END,
         (
           SELECT string_agg(
             CASE WHEN c = ANY(table_columns) THEN quote_ident(c) ELSE 'NULL' END,
@@ -88,5 +101,9 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_debug_views_create(text)
-  IS 'Creates debug views, one per table in shards. Each view unions data from all shards related to the particular table.';
+COMMENT ON FUNCTION sharding_debug_views_create(text, text)
+  IS 'Creates debug views, one per table in shards. Each view unions data '
+     'from all shards related to the particular table. If the 2nd parameter '
+     'is passed, the views are created from debug foreign shard schemas '
+     '(assuming the schemas were generated with sharding_debug_views_create '
+     'previously).';

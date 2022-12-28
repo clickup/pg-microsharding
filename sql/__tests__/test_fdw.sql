@@ -18,6 +18,8 @@ SELECT expect(
   'after activating 2 shards'
 ) \gset
 
+CREATE TABLE test_sharding0001.tbl1(id bigint);
+
 COMMIT;
 BEGIN;
 SET search_path TO test_sharding;
@@ -28,6 +30,15 @@ SELECT expect(
   'after creating foreign views'
 ) \gset
 
+SELECT expect(
+  $$ SELECT array_agg(s) FROM sharding_debug_views_create('test_sharding', 'test_sharding_fdw') s $$,
+  '{test_sharding.tbl1}',
+  'after creating debug views'
+) \gset
+
 \dn test_sharding*
+\d test_sharding_fdw_test_sharding0001.*
+
+DROP TABLE test_sharding0001.tbl1;
 
 \ir ./rollback.sql

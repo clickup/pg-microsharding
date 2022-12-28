@@ -1,7 +1,9 @@
 \set ON_ERROR_STOP on
 
+-- Remove artifacts of the previous unfuccessful runs (if any).
 DO $$
 BEGIN
+  DROP TABLE IF EXISTS test_sharding0001.tbl1;
   SET search_path TO test_sharding;
   PERFORM sharding_debug_fdw_drop('test_sharding_fdw');
   PERFORM sharding_ensure_absent(0, 1000);

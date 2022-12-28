@@ -7,23 +7,15 @@ AS $$
 DECLARE
   server text;
   row_oid oid;
-  dst_schema text;
+  dst_schema regnamespace;
 BEGIN
   SET client_min_messages TO warning;
 
-  FOR row_oid, dst_schema IN
-    SELECT oid, nspname
-    FROM pg_namespace
-    WHERE nspname LIKE (dst_prefix || '\_%')
-    ORDER BY nspname
-  LOOP
-    IF pg_catalog.obj_description(row_oid) LIKE 'pg_sharding:%' THEN
-      EXECUTE format(
-        'DROP SCHEMA %I CASCADE',
-        dst_schema
-      );
-      RETURN NEXT dst_schema;
-    END IF;
+  FOREACH dst_schema IN ARRAY _sharding_debug_fdw_schemas(dst_prefix) LOOP
+    EXECUTE format(
+      'DROP SCHEMA %I CASCADE',
+      dst_schema
+    );
   END LOOP;
 
   FOR row_oid, server IN

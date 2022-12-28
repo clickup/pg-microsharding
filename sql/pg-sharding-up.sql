@@ -11,6 +11,7 @@ BEGIN
 END;
 $$;
 
+\ir ./functions/_sharding_debug_fdw_schemas.sql
 \ir ./functions/_sharding_ensure_active_shards.sql
 \ir ./functions/_sharding_schema_name.sql
 \ir ./functions/sharding_debug_fdw_create.sql
