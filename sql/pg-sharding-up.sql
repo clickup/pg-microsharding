@@ -13,6 +13,8 @@ $$;
 
 \ir ./functions/_sharding_ensure_active_shards.sql
 \ir ./functions/_sharding_schema_name.sql
+\ir ./functions/sharding_debug_fdw_create.sql
+\ir ./functions/sharding_debug_fdw_drop.sql
 \ir ./functions/sharding_debug_views_create.sql
 \ir ./functions/sharding_debug_views_drop.sql
 \ir ./functions/sharding_do_on_each.sql

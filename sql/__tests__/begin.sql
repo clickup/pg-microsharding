@@ -1,3 +1,17 @@
+\set ON_ERROR_STOP on
+
+DO $$
+BEGIN
+  SET search_path TO test_sharding;
+  PERFORM sharding_debug_fdw_drop('test_sharding_fdw');
+  PERFORM sharding_ensure_absent(0, 1000);
+  SET search_path TO public;
+  DROP SCHEMA test_sharding CASCADE;
+EXCEPTION
+  WHEN OTHERS THEN -- skip
+END
+$$;
+
 BEGIN;
 
 CREATE SCHEMA test_sharding;
@@ -14,7 +28,7 @@ CREATE OR REPLACE FUNCTION _sharding_schema_name(
 LANGUAGE sql
 SET search_path FROM CURRENT
 AS $$
-  SELECT 'shtest' || lpad($1::text, 4, '0')
+  SELECT 'test_sharding' || lpad($1::text, 4, '0')
 $$;
 
 

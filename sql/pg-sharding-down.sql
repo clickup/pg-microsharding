@@ -1,6 +1,8 @@
 DROP FUNCTION _sharding_active_shards();
 DROP FUNCTION _sharding_ensure_active_shards(text[]);
 DROP FUNCTION _sharding_schema_name(integer);
+DROP FUNCTION sharding_debug_fdw_create(text, text[]);
+DROP FUNCTION sharding_debug_fdw_drop(text);
 DROP FUNCTION sharding_debug_views_create(text);
 DROP FUNCTION sharding_debug_views_drop(text);
 DROP FUNCTION sharding_do_on_each(text);
