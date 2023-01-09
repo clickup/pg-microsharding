@@ -1,3 +1,4 @@
+import compact from "lodash/compact";
 import cleanUpPubSub from "./cleanUpPubSub";
 import getTablesInSchema from "./getTablesInSchema";
 import { libSchema, psql, schemaNew, schemaOld, shardNo } from "./names";
@@ -23,13 +24,23 @@ export default async function resultCommit({
 
   await cleanUpPubSub({ fromDsn, toDsn, schema, quiet: false });
 
+  // E.g. 2023-01-09T07:09:54.253Z
+  const dateSuffix = new Date()
+    .toISOString()
+    .replace(/\..*$/, "")
+    .replace(/[-T:Z]/g, "");
+
   if (activateOnDestination) {
     const shard = shardNo(schema);
     await runShell(
       psql(fromDsn),
-      (shard !== null
-        ? `SELECT ${libSchema()}.sharding_ensure_inactive(${shard}); `
-        : "") + `ALTER schema ${schema} RENAME TO ${schemaOld(schema)}`,
+      compact([
+        "BEGIN",
+        shard !== null &&
+          `SELECT ${libSchema()}.sharding_ensure_inactive(${shard})`,
+        `ALTER schema ${schema} RENAME TO ${schemaOld(schema, dateSuffix)}`,
+        "COMMIT",
+      ]).join("; "),
       "Renaming & deactivating schema on the source"
     );
     if (shard !== null) {

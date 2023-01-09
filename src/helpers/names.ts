@@ -15,7 +15,8 @@ export const psql = (dsn: string): string =>
 export const shardNo = (schema: string): number | null =>
   schema.match(/(\d+)/) ? parseInt(RegExp.$1) : null;
 
-export const schemaOld = (schema: string): string => `${schema}old`;
+export const schemaOld = (schema: string, dateSuffix: string): string =>
+  `${schema}old${dateSuffix}`;
 
 export const schemaNew = (schema: string): string => `${schema}new`;
 
