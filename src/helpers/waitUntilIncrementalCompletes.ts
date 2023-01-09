@@ -63,12 +63,9 @@ export default async function waitUntilIncrementalCompletes(
       const stats: string[] = [];
       for (const table of tables) {
         progress(
-          `...still replicating` +
-            ((prevStats.length > 0 ? prevStats : stats) +
-              ": " +
-              prevStats.join(", ")) +
-            "\n" +
-            `...getting precise row count for destination table ${table}...`
+          `...still replicating ` +
+            (prevStats.length > 0 ? prevStats : stats).join(", ") +
+            `\n...getting precise row count for destination table ${table}...`
         );
         const countTo = parseInt(
           first(
@@ -80,21 +77,20 @@ export default async function waitUntilIncrementalCompletes(
         );
         const countFrom = tableCounts.get(table);
         if (countFrom !== countTo) {
-          stats.push(`${table} (rows: src=${countFrom} dst=${countTo})`);
+          stats.push(`${table} (src=${countFrom} dst=${countTo})`);
         }
 
         throwIfAborted();
       }
 
-      if (stats.length > 0) {
-        prevStats = stats;
-      } else {
+      if (stats.length === 0) {
         progress(
           "...count of rows is identical in source and destination tables"
         );
         break;
       }
 
+      prevStats = stats;
       await delay(1000);
       throwIfAborted();
     }
