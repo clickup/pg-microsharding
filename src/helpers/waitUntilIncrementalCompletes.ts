@@ -42,7 +42,9 @@ export default async function waitUntilIncrementalCompletes(
     await client.query(`SET LOCAL search_path TO ${schema}`);
     throwIfAborted();
 
-    progress("Locking source tables for write...");
+    log(
+      "ATTENTION: Locking source tables EXCLUSIVELY (pausing writes and reads)..."
+    );
     await client.query(`LOCK ${tables.join(", ")} IN EXCLUSIVE MODE`);
     throwIfAborted();
 
@@ -85,7 +87,7 @@ export default async function waitUntilIncrementalCompletes(
 
       if (stats.length === 0) {
         progress(
-          "...count of rows is identical in source and destination tables"
+          "...counts of rows are now identical in source and destination tables"
         );
         break;
       }
