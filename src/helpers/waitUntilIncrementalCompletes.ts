@@ -28,6 +28,21 @@ export default async function waitUntilIncrementalCompletes(
     return;
   }
 
+  const prewarmCounts: string[] = [];
+  for (const table of tables) {
+    progress(
+      `...destination tables counts: ${prewarmCounts.join(", ")}\n` +
+        `...pre-warming destination table ${table} to get its row count quicker...`
+    );
+    const countTo = parseInt(
+      first(
+        await runShell(psql(toDsn), `SELECT COUNT(1) FROM ${schema}.${table}`)
+      )!
+    );
+    prewarmCounts.push(`${table}:${countTo}`);
+    throwIfAborted();
+  }
+
   const client = new Client({
     connectionString: fromDsn.replace(/(?<=[&?])sslmode=prefer&?/, ""),
     ssl: fromDsn.match(/[&?]sslmode=prefer/)
@@ -35,6 +50,7 @@ export default async function waitUntilIncrementalCompletes(
       : undefined,
     application_name: "waitUntilIncrementalCompletes",
   });
+
   try {
     await client.connect();
     await client.query("BEGIN");
