@@ -18,6 +18,6 @@ export default async function resultAbort({
   await runShell(
     psql(toDsn),
     `DROP schema IF EXISTS ${schema} CASCADE`,
-    `Dropping destination semi-migrated schema(s)`
+    `Dropping destination semi-migrated shard(s)`
   );
 }

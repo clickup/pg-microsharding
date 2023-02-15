@@ -41,7 +41,7 @@ export default async function resultCommit({
         `ALTER schema ${schema} RENAME TO ${schemaOld(schema, dateSuffix)}`,
         "COMMIT",
       ]).join("; "),
-      "Renaming & deactivating schema on the source"
+      "Renaming & deactivating shard on the source"
     );
     if (shard !== null) {
       await runShell(

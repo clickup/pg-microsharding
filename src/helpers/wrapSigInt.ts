@@ -14,7 +14,7 @@ export default async function wrapSigInt<T>(
 
   const throwIfAborted = (): void => {
     if (aborted) {
-      throw "Aborted due to SIGINT.";
+      throw "Aborted due to SIGINT";
     }
   };
 

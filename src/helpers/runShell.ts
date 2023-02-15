@@ -15,11 +15,9 @@ export default async function runShell(
   if (comment) {
     log(chalk.greenBright(chalk.bold(comment)));
     input = input?.trim() ?? null;
+    log(chalk.gray(`$ ${cmd}`));
     if (input) {
-      log(chalk.gray(`-- $ ${stripPassword(cmd)}`));
-      log(chalk.gray(stripPassword(input).trim()));
-    } else {
-      log(chalk.gray(`$ ${stripPassword(cmd)}`));
+      log(chalk.gray(input.trim()));
     }
   }
 
@@ -46,8 +44,4 @@ export default async function runShell(
   } finally {
     process.removeListener("SIGINT", noop);
   }
-}
-
-function stripPassword(s: string): string {
-  return s.replace(/(\w+\\?:\/\/[^:]+\\?):[^\\@]+\\?@/gs, "$1@");
 }

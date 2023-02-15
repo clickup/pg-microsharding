@@ -84,61 +84,63 @@ async function move({
   activateOnDestination: boolean;
   deactivateScript?: string;
 }): Promise<void> {
-  const schema = first(
-    await runShell(
-      psql(fromDsn),
-      `SELECT ${libSchema()}._sharding_schema_name(${shard})`
-    )
-  );
-  if (!schema) {
-    throw `Can't determine schema name for shard number ${shard}`;
-  }
-
+  let unlock = async (): Promise<void> => {};
   try {
-    await cleanUpPubSub({ fromDsn, toDsn, schema, quiet: true });
-    await copyDDL({ fromDsn, toDsn, schema });
-  } catch (e: any) {
-    // no cleanup if failed here since it's one transaction
-    log(chalk.red("" + e));
-    throw "Exited abnormally with no-op.";
-  }
+    const schema = first(
+      await runShell(
+        psql(fromDsn),
+        `SELECT ${libSchema()}._sharding_schema_name(${shard})`
+      )
+    );
+    if (!schema) {
+      throw `Can't determine schema name for shard number ${shard}`;
+    }
 
-  try {
-    await wrapSigInt(async (throwIfAborted) => {
-      await startCopyingTables({ fromDsn, toDsn, schema });
-      throwIfAborted();
-      await waitUntilBackfillCompletes(
-        { fromDsn, toDsn, schema },
-        throwIfAborted
-      );
-      await waitUntilIncrementalCompletes(
-        { fromDsn, toDsn, schema },
-        throwIfAborted
-      );
-      await advanceSequences({ fromDsn, toDsn });
-      throwIfAborted();
-    });
-  } catch (e) {
-    log(chalk.red("" + e));
-    log("");
-    log("Cleaning up...");
-    await delay(1000);
-    await resultAbort({ fromDsn, toDsn, schema });
-    throw "Exited abnormally";
-  }
+    try {
+      await cleanUpPubSub({ fromDsn, toDsn, schema, quiet: true });
+      await copyDDL({ fromDsn, toDsn, schema });
+    } catch (e: unknown) {
+      // no cleanup if failed here since it's one transaction
+      log(chalk.red("" + e));
+      throw "Exited abnormally with no-op.";
+    }
 
-  try {
-    await resultCommit({
-      activateOnDestination,
-      deactivateScript,
-      fromDsn,
-      toDsn,
-      schema,
-    });
-  } catch (e) {
-    log(chalk.red("" + e));
-    log("");
-    throw "DANGER! Exited abnormally while committing the result! Shard is in half-working state.";
+    try {
+      await wrapSigInt(async (throwIfAborted) => {
+        await startCopyingTables({ fromDsn, toDsn, schema });
+        throwIfAborted();
+        await waitUntilBackfillCompletes(
+          { fromDsn, toDsn, schema },
+          throwIfAborted
+        );
+        unlock = await waitUntilIncrementalCompletes(
+          { fromDsn, schema },
+          throwIfAborted
+        );
+        await advanceSequences({ fromDsn, toDsn });
+      });
+    } catch (e: unknown) {
+      log(chalk.red("" + e));
+      log("Cleaning up...");
+      await delay(1000);
+      await resultAbort({ fromDsn, toDsn, schema });
+      throw "Exited abnormally";
+    }
+
+    try {
+      await resultCommit({
+        activateOnDestination,
+        deactivateScript,
+        fromDsn,
+        toDsn,
+        schema,
+      });
+    } catch (e: unknown) {
+      log(chalk.red("" + e));
+      throw "DANGER! Exited abnormally while committing the result! Shard is in half-working state.";
+    }
+  } finally {
+    await unlock();
   }
 }
 
