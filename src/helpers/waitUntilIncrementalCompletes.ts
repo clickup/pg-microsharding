@@ -43,6 +43,8 @@ export default async function waitUntilIncrementalCompletes(
     throwIfAborted();
   }
 
+  progress.clear();
+
   const client = new Client({
     connectionString: fromDsn.replace(/(?<=[&?])sslmode=prefer&?/, ""),
     ssl: fromDsn.match(/[&?]sslmode=prefer/)
@@ -102,8 +104,9 @@ export default async function waitUntilIncrementalCompletes(
       }
 
       if (stats.length === 0) {
-        progress(
-          "...counts of rows are now identical in source and destination tables"
+        progress.clear();
+        log(
+          "Counts of rows are now identical in source and destination tables"
         );
         break;
       }
