@@ -1,34 +1,25 @@
 import chalk from "chalk";
-import delay from "delay";
-import first from "lodash/first";
 import minimist from "minimist";
-import advanceSequences from "./helpers/advanceSequences";
-import cleanUpPubSub from "./helpers/cleanUpPubSub";
-import copyDDL from "./helpers/copyDDL";
+import prompts from "prompts";
+import cleanup from "./api/cleanup";
+import move from "./api/move";
+import rebalance from "./api/rebalance";
 import { log } from "./helpers/logging";
-import { libSchema, psql } from "./helpers/names";
-import resultAbort from "./helpers/resultAbort";
-import resultCommit from "./helpers/resultCommit";
-import runShell from "./helpers/runShell";
-import startCopyingTables from "./helpers/startCopyingTables";
-import waitUntilBackfillCompletes from "./helpers/waitUntilBackfillCompletes";
-import waitUntilIncrementalCompletes from "./helpers/waitUntilIncrementalCompletes";
-import wrapSigInt from "./helpers/wrapSigInt";
-import rebalance from "./rebalance";
 
-export { rebalance };
+export { cleanup, move, rebalance };
 
 const USAGE = [
   "Usage:",
-  "  pg-sharding move\\\n" +
-    "    --shard=N --from=DSN --to=DSN \\\n" +
-    "    [--activate-on-destination] \\\n" +
-    "    [--deactivate-script='SQL $1 SQL']",
+  "  pg-sharding move",
+  "    --shard=N --from=DSN --to=DSN",
+  "    [--activate-on-destination]",
+  "    [--deactivate-script='SQL $1 SQL']",
+  "  pg-sharding cleanup --dsn=DSN",
 ];
 
 export async function main(argv: string[]): Promise<boolean> {
   const args = minimist(argv, {
-    string: ["shard", "from", "to", "deactivate-script"],
+    string: ["shard", "from", "to", "deactivate-script", "dsn"],
     boolean: ["activate-on-destination"],
   });
 
@@ -67,81 +58,36 @@ export async function main(argv: string[]): Promise<boolean> {
     return true;
   }
 
+  if (args._[0] === "cleanup") {
+    let dsn: string;
+    if ((args.dsn ?? "").match(/^\w+:\/\//)) {
+      dsn = args.dsn;
+    } else {
+      throw "Please provide --dsn, DB DSN to remove old schemas from, as postgresql://user:pass@host/db?options";
+    }
+
+    const res = await cleanup({
+      dsn,
+      confirm: async (schemas) => {
+        const response = await prompts({
+          type: "text",
+          name: "value",
+          message: `Delete redundant schemas ${schemas.join(", ")} (y/n)?`,
+          validate: (value: string) =>
+            value !== "y" && value !== "n" ? `Enter "y" or "n".` : true,
+        });
+        return response.value === "y";
+      },
+    });
+    if (res.length > 0) {
+      log(res.join("\n"));
+    }
+
+    return true;
+  }
+
   log(USAGE.join("\n"));
   return false;
-}
-
-async function move({
-  shard,
-  fromDsn,
-  toDsn,
-  activateOnDestination,
-  deactivateScript,
-}: {
-  shard: number;
-  fromDsn: string;
-  toDsn: string;
-  activateOnDestination: boolean;
-  deactivateScript?: string;
-}): Promise<void> {
-  let unlock = async (): Promise<void> => {};
-  try {
-    const schema = first(
-      await runShell(
-        psql(fromDsn),
-        `SELECT ${libSchema()}._sharding_schema_name(${shard})`
-      )
-    );
-    if (!schema) {
-      throw `Can't determine schema name for shard number ${shard}`;
-    }
-
-    try {
-      await cleanUpPubSub({ fromDsn, toDsn, schema, quiet: true });
-      await copyDDL({ fromDsn, toDsn, schema });
-    } catch (e: unknown) {
-      // no cleanup if failed here since it's one transaction
-      log(chalk.red("" + e));
-      throw "Exited abnormally with no-op.";
-    }
-
-    try {
-      await wrapSigInt(async (throwIfAborted) => {
-        await startCopyingTables({ fromDsn, toDsn, schema });
-        throwIfAborted();
-        await waitUntilBackfillCompletes(
-          { fromDsn, toDsn, schema },
-          throwIfAborted
-        );
-        unlock = await waitUntilIncrementalCompletes(
-          { fromDsn, schema },
-          throwIfAborted
-        );
-        await advanceSequences({ fromDsn, toDsn });
-      });
-    } catch (e: unknown) {
-      log(chalk.red("" + e));
-      log("Cleaning up...");
-      await delay(1000);
-      await resultAbort({ fromDsn, toDsn, schema });
-      throw "Exited abnormally";
-    }
-
-    try {
-      await resultCommit({
-        activateOnDestination,
-        deactivateScript,
-        fromDsn,
-        toDsn,
-        schema,
-      });
-    } catch (e: unknown) {
-      log(chalk.red("" + e));
-      throw "DANGER! Exited abnormally while committing the result! Shard is in half-working state.";
-    }
-  } finally {
-    await unlock();
-  }
 }
 
 if (require.main === module) {

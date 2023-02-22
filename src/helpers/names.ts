@@ -20,6 +20,9 @@ export const schemaOld = (schema: string, dateSuffix: string): string =>
 
 export const schemaNew = (schema: string): string => `${schema}new`;
 
+export const schemaCleanupRe = (schemaNameRe: string): string =>
+  `^(${schemaNameRe})(old_\\d+|old\\d*|new)$`;
+
 export const libSchema = (): string => "sharding";
 
 export const dsnToHost = (dsn: string): string => new URL(dsn).hostname;
