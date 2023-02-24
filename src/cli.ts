@@ -66,7 +66,7 @@ export async function main(argv: string[]): Promise<boolean> {
       throw "Please provide --dsn, DB DSN to remove old schemas from, as postgresql://user:pass@host/db?options";
     }
 
-    const res = await cleanup({
+    await cleanup({
       dsn,
       confirm: async (schemas) => {
         const response = await prompts({
@@ -79,9 +79,6 @@ export async function main(argv: string[]): Promise<boolean> {
         return response.value === "y";
       },
     });
-    if (res.length > 0) {
-      log(res.join("\n"));
-    }
 
     return true;
   }

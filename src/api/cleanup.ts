@@ -11,7 +11,7 @@ export default async function cleanup({
 }: {
   dsn: string;
   confirm?: (schemas: string[]) => Promise<boolean>;
-}): Promise<string[]> {
+}): Promise<void> {
   const dummyNo = 101;
   const schemaNameRe = first(
     await runShell(
@@ -29,16 +29,20 @@ export default async function cleanup({
     schema.match(oldSchemaNameRe)
   );
   if (oldSchemas.length === 0) {
-    return [];
+    return;
   }
 
   if (confirm && !(await confirm(oldSchemas))) {
-    return [];
+    return;
   }
 
-  return runShell(
-    psql(dsn),
-    `DROP SCHEMA ${oldSchemas.join(", ")} CASCADE`,
-    "Dropping redundant schemas..."
-  );
+  // Remove sequentially, otherwise there is a high chance of having
+  // shared_buffers OOM.
+  for (const schema of oldSchemas) {
+    await runShell(
+      psql(dsn),
+      `DROP SCHEMA ${schema} CASCADE`,
+      `Dropping redundant schema ${schema}...`
+    );
+  }
 }
