@@ -2,8 +2,7 @@
   "name": "pg-sharding",
   "description": "Maintains the desired number of PG schemas (shards) and allows to migrate them.",
   "version": "2.10.291",
-  "license": "UNLICENSED",
-  "private": true,
+  "license": "MIT",
   "main": "dist/cli.js",
   "types": "dist/cli.d.ts",
   "bin": {
@@ -25,5 +24,12 @@
     "pg": "^8.7.1",
     "prompts": "^2.4.2",
     "sprintf-js": "^1.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/time-loop/github-packages"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   }
 }
