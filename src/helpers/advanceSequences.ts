@@ -27,17 +27,17 @@ export default async function advanceSequences({
     psql(toDsn),
     `SELECT sequence_schema || '.' || sequence_name FROM information_schema.sequences`
   );
-  const sql = compact(
+  const toSql = compact(
     fromSequences.map(([sequence, value]) =>
       toSequences.includes(sequence)
-        ? `SELECT setval('${sequence}', GREATEST(nextval('${sequence}'), ${value}) + 10000000);`
+        ? `SELECT setval('${sequence}', GREATEST(nextval('${sequence}'), ${value}) + 1000);`
         : null
     )
   );
-  if (sql.length > 0) {
+  if (toSql.length > 0) {
     await runShell(
       psql(toDsn),
-      sql.join("\n"),
+      toSql.join("\n"),
       "Advancing destination sequences"
     );
   }
