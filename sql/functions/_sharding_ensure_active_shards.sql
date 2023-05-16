@@ -9,7 +9,7 @@ BEGIN
     EXECUTE format(
       $sql$
         CREATE OR REPLACE FUNCTION _sharding_active_shards() RETURNS text[]
-        LANGUAGE sql
+        LANGUAGE sql IMMUTABLE
         SET search_path FROM CURRENT
         AS $body$ SELECT %L::text[]; $body$
       $sql$,
@@ -23,7 +23,7 @@ BEGIN
   EXECUTE format(
     $sql$
       CREATE OR REPLACE FUNCTION _sharding_active_shards() RETURNS text[]
-      LANGUAGE sql
+      LANGUAGE sql IMMUTABLE
       SET search_path FROM CURRENT
       AS $body$ SELECT %L::text[]; $body$
     $sql$,

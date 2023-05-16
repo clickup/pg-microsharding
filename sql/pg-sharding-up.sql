@@ -2,7 +2,7 @@ DO $$
 BEGIN
   BEGIN
     CREATE FUNCTION _sharding_active_shards() RETURNS text[]
-    LANGUAGE sql
+    LANGUAGE sql IMMUTABLE
     SET search_path FROM CURRENT
     AS $body$ SELECT '{}'::text[]; $body$;
   EXCEPTION
