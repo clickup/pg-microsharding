@@ -4,31 +4,23 @@ CREATE OR REPLACE FUNCTION _sharding_ensure_active_shards(
 LANGUAGE plpgsql
 SET search_path FROM CURRENT
 AS $$
+DECLARE
+  query text := $sql$
+    CREATE OR REPLACE FUNCTION _sharding_active_shards() RETURNS text[]
+      LANGUAGE sql IMMUTABLE
+      SET search_path FROM CURRENT
+      AS $body$ SELECT %L::text[]; $body$;
+    DISCARD PLANS;
+  $sql$;
 BEGIN
   IF shards IS NOT NULL THEN
-    EXECUTE format(
-      $sql$
-        CREATE OR REPLACE FUNCTION _sharding_active_shards() RETURNS text[]
-        LANGUAGE sql IMMUTABLE
-        SET search_path FROM CURRENT
-        AS $body$ SELECT %L::text[]; $body$
-      $sql$,
-      shards
-    );
+    EXECUTE format(query, shards);
   END IF;
 
   -- Re-filter the list of shards by the list of actually existing schemas and
   -- re-create the function with a trully existing shards.
   shards := sharding_list_active_shards();
-  EXECUTE format(
-    $sql$
-      CREATE OR REPLACE FUNCTION _sharding_active_shards() RETURNS text[]
-      LANGUAGE sql IMMUTABLE
-      SET search_path FROM CURRENT
-      AS $body$ SELECT %L::text[]; $body$
-    $sql$,
-    shards
-  );
+  EXECUTE format(query, shards);
 END;
 $$;
 

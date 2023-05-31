@@ -39,13 +39,13 @@ SELECT expect(
 SELECT expect(
   $$ SELECT array_agg(s) FROM sharding_ensure_active(10, 11) s $$,
   '{test_sharding0010,test_sharding0011}',
-  'after activating 5 shards'
+  'after activating 2 more shards'
 ) \gset
 
 SELECT expect(
   $$ SELECT sharding_list_active_shards() $$,
   '{test_sharding0000,test_sharding0001,test_sharding0010,test_sharding0011}',
-  'after activating 2 shards'
+  'after activating 4 total shards'
 ) \gset
 
 SELECT expect(
