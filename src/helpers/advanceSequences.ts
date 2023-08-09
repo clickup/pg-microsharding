@@ -16,16 +16,16 @@ export default async function advanceSequences({
   const fromSequences = (
     await runShell(
       psql(fromDsn),
-      `SELECT ` +
-        `sequence_schema || '.' || sequence_name, ` +
-        `nextval(sequence_schema || '.' || sequence_name)::text ` +
-        `FROM information_schema.sequences ` +
-        `ORDER BY 1`
+      "SELECT " +
+        "sequence_schema || '.' || sequence_name, " +
+        "nextval(sequence_schema || '.' || sequence_name)::text " +
+        "FROM information_schema.sequences " +
+        "ORDER BY 1"
     )
   ).map((s) => s.split("|") as [string, string]);
   const toSequences = await runShell(
     psql(toDsn),
-    `SELECT sequence_schema || '.' || sequence_name FROM information_schema.sequences`
+    "SELECT sequence_schema || '.' || sequence_name FROM information_schema.sequences"
   );
   const toSql = compact(
     fromSequences.map(([sequence, value]) =>

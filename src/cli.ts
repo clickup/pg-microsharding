@@ -74,7 +74,7 @@ export async function main(argv: string[]): Promise<boolean> {
           name: "value",
           message: `Delete redundant schemas ${schemas.join(", ")} (y/n)?`,
           validate: (value: string) =>
-            value !== "y" && value !== "n" ? `Enter "y" or "n".` : true,
+            value !== "y" && value !== "n" ? 'Enter "y" or "n".' : true,
         });
         return response.value === "y";
       },

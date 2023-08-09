@@ -35,7 +35,7 @@ export default async function startCopyingTables({
     `CREATE SUBSCRIPTION ${subName(schema)} ` +
       `CONNECTION '${fromDsn}' ` +
       `PUBLICATION ${pubName(schema)} ` +
-      `WITH (create_slot=false)`,
+      "WITH (create_slot=false)",
     "Creating destination subscription"
   );
   return tables;

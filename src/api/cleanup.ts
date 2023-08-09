@@ -23,7 +23,7 @@ export default async function cleanup({
 
   const allSchemas = await runShell(
     psql(dsn),
-    `SELECT nspname FROM pg_namespace`
+    "SELECT nspname FROM pg_namespace"
   );
   const oldSchemas = allSchemas.filter((schema) =>
     schema.match(oldSchemaNameRe)

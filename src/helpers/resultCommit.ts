@@ -60,7 +60,7 @@ export default async function resultCommit({
               deactivateScript.replace(/\$1/g, `'${schema}.${table}'`) + ";"
           )
           .join("\n"),
-        `Running custom deactivation script for shard tables`
+        "Running custom deactivation script for shard tables"
       );
     }
   } else {

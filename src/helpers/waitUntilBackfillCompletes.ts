@@ -33,10 +33,10 @@ export default async function waitUntilBackfillCompletes(
     const backfillingTables = (
       await runShell(
         psql(toDsn),
-        `SELECT relname, srsubstate ` +
-          `FROM pg_subscription_rel ` +
-          `JOIN pg_subscription ON pg_subscription.oid=srsubid ` +
-          `JOIN pg_class ON pg_class.oid=srrelid ` +
+        "SELECT relname, srsubstate " +
+          "FROM pg_subscription_rel " +
+          "JOIN pg_subscription ON pg_subscription.oid=srsubid " +
+          "JOIN pg_class ON pg_class.oid=srrelid " +
           `WHERE subname='${subName(schema)}' AND srsubstate<>'r'`
       )
     ).map((s) => s.split("|") as [string, string]);
@@ -71,7 +71,7 @@ export default async function waitUntilBackfillCompletes(
       throwIfAborted();
     }
 
-    progress(`...still backfilling:\n` + stats.map((s) => `- ${s}`).join("\n"));
+    progress("...still backfilling:\n" + stats.map((s) => `- ${s}`).join("\n"));
     await delay(1000);
     throwIfAborted();
   }
