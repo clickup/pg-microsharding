@@ -55,6 +55,20 @@ export async function main(argv: string[]): Promise<boolean> {
       activateOnDestination,
       deactivateScript,
     });
+
+    if (!activateOnDestination) {
+      log(
+        chalk.red(
+          "\n" +
+            "ATTENTION: the schema has been copied, but NOT activated on the destination.\n" +
+            "So effectively, it was a dry-run, and the data still lives in the source DB.\n" +
+            "\n" +
+            "To activate the schema on the destination and deactivate on the source, run\n" +
+            "the tool with --activate-on-destination flag.\n"
+        )
+      );
+    }
+
     return true;
   }
 
