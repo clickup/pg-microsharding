@@ -4,8 +4,7 @@ SET search_path FROM CURRENT
 AS $$
   SELECT COALESCE(array_agg(nspname::regnamespace ORDER BY nspname), '{}')
   FROM pg_namespace
-  WHERE
-    pg_namespace.nspname = ANY(_sharding_active_shards())
+  WHERE pg_namespace.nspname = ANY(_sharding_active_shards())
 $$;
 
 COMMENT ON FUNCTION sharding_list_active_shards()

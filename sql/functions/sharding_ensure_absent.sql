@@ -19,6 +19,7 @@ BEGIN
     )
     SELECT shards.shard FROM shards
     WHERE EXISTS (SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname = shards.shard)
+    ORDER BY shards.shard
   LOOP
     EXECUTE format('DROP SCHEMA %I', shard);
     RETURN NEXT shard;

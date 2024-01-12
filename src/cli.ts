@@ -5,8 +5,9 @@ import cleanup from "./api/cleanup";
 import move from "./api/move";
 import rebalance from "./api/rebalance";
 import { log } from "./helpers/logging";
+import shellQuote from "./helpers/shellQuote";
 
-export { cleanup, move, rebalance };
+export { cleanup, move, rebalance, shellQuote };
 
 const USAGE = [
   "Usage:",
@@ -25,22 +26,22 @@ export async function main(argv: string[]): Promise<boolean> {
 
   if (args._[0] === "move") {
     let shard: number;
-    if ((args.shard ?? "").match(/^(\d+)$/)) {
-      shard = parseInt(args.shard);
+    if ((args["shard"] ?? "").match(/^(\d+)$/)) {
+      shard = parseInt(args["shard"]);
     } else {
       throw "Please provide --shard, a numeric shard number to move";
     }
 
     let fromDsn: string;
-    if ((args.from ?? "").match(/^\w+:\/\//)) {
-      fromDsn = args.from;
+    if ((args["from"] ?? "").match(/^\w+:\/\//)) {
+      fromDsn = args["from"];
     } else {
       throw "Please provide --from, source DB DSN, as postgresql://user:pass@host/db?options";
     }
 
     let toDsn: string;
-    if ((args.to ?? "").match(/^\w+:\/\//)) {
-      toDsn = args.to;
+    if ((args["to"] ?? "").match(/^\w+:\/\//)) {
+      toDsn = args["to"];
     } else {
       throw "Please provide --to, destination DB DSN, as postgresql://user:pass@host/db?options";
     }
@@ -74,8 +75,8 @@ export async function main(argv: string[]): Promise<boolean> {
 
   if (args._[0] === "cleanup") {
     let dsn: string;
-    if ((args.dsn ?? "").match(/^\w+:\/\//)) {
-      dsn = args.dsn;
+    if ((args["dsn"] ?? "").match(/^\w+:\/\//)) {
+      dsn = args["dsn"];
     } else {
       throw "Please provide --dsn, DB DSN to remove old schemas from, as postgresql://user:pass@host/db?options";
     }

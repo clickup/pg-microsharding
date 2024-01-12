@@ -1,19 +1,32 @@
 {
-  "name": "pg-sharding",
-  "description": "Maintains the desired number of PG schemas (shards) and allows to migrate them.",
+  "name": "@clickup/pg-sharding",
+  "description": "Micro-shards support for PostgreSQL",
   "version": "2.10.291",
   "license": "MIT",
-  "main": "dist/cli.js",
-  "types": "dist/cli.d.ts",
+  "keywords": [
+    "postgresql",
+    "sharding",
+    "rebalance",
+    "cluster"
+  ],
+  "main": "./dist/cli.js",
+  "types": "./dist/cli.d.ts",
+  "exports": "./dist/cli.js",
   "bin": {
     "pg-sharding": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc.sh",
-    "dev": "tight-loop.sh tsc.sh --watch",
-    "lint": "lint.sh",
-    "test": "test.sh",
-    "test:db": "set -e; for f in sql/__tests__/test_*.sql; do echo == $f; echo; yarn psql -f $f; echo; echo; done"
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "lint": "eslint . --ext .ts --cache --cache-location dist/.eslintcache",
+    "test": "set -e; bash internal/docker-compose-up.sh; export PGHOST=127.0.0.1 PGPORT=54833 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres; jest",
+    "test:db": "set -e; bash internal/docker-compose-up.sh; export PGHOST=127.0.0.1 PGPORT=54833 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres; for f in sql/__tests__/test_*.sql; do echo == $f; echo; psql -f $f; echo; echo; done",
+    "psql": "PGHOST=127.0.0.1 PGPORT=54833 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres psql",
+    "docs": "echo No docs step.",
+    "clean": "rm -rf dist node_modules yarn.lock package-lock.json pnpm-lock.yaml *.log",
+    "copy-package-to-public-dir": "copy-package-to-public-dir.sh",
+    "backport-package-from-public-dir": "backport-package-from-public-dir.sh",
+    "deploy": "npm run build && npm run lint && npm run test && npm publish --access=public"
   },
   "dependencies": {
     "chalk": "^4.1.2",
@@ -25,11 +38,32 @@
     "prompts": "^2.4.2",
     "sprintf-js": "^1.1.2"
   },
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/lodash": "^4.14.175",
+    "@types/minimist": "^1.2.2",
+    "@types/node": "^20.4.1",
+    "@types/pg": "^8.6.1",
+    "@types/prompts": "^2.4.0",
+    "@types/sprintf-js": "^1.1.2",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-lodash": "^7.4.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-typescript-enum": "^2.1.0",
+    "eslint-plugin-typescript-sort-keys": "^2.3.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "eslint": "^8.40.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
   "repository": {
     "type": "git",
-    "url": "git://github.com/time-loop/github-packages"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "url": "git://github.com/clickup/pg-sharding"
   }
 }

@@ -1,4 +1,4 @@
-# pg-sharding: micro-shards support for PostgreSQL
+# @clickup/pg-sharding: micro-shards support for PostgreSQL
 
 Each micro-shard is a PG schema with numeric suffix. Micro-shards have the same
 set of tables with same names; it's up to the higher-level tools to keep the

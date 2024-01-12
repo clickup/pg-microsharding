@@ -16,6 +16,9 @@ $$;
 
 BEGIN;
 
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+CREATE EXTENSION IF NOT EXISTS dblink;
+
 CREATE SCHEMA test_sharding;
 SET search_path TO test_sharding;
 SET client_min_messages TO NOTICE;

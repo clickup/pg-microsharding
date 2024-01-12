@@ -33,7 +33,7 @@ export default async function runShell(
           ...process.env,
           PGOPTIONS: compact([
             "--client-min-messages=warning",
-            process.env.PGOPTIONS,
+            process.env["PGOPTIONS"],
           ]).join(" "),
         },
       })
