@@ -35,8 +35,8 @@ export default async function move({
     const schema = first(
       await runShell(
         psql(fromDsn),
-        `SELECT ${libSchema()}._sharding_schema_name(${shard})`
-      )
+        `SELECT ${libSchema()}._sharding_schema_name(${shard})`,
+      ),
     );
     if (!schema) {
       throw `Can't determine schema name for shard number ${shard}`;
@@ -57,11 +57,11 @@ export default async function move({
         throwIfAborted();
         await waitUntilBackfillCompletes(
           { fromDsn, toDsn, schema },
-          throwIfAborted
+          throwIfAborted,
         );
         unlock = await waitUntilIncrementalCompletes(
           { fromDsn, schema },
-          throwIfAborted
+          throwIfAborted,
         );
         await advanceSequences({ fromDsn, toDsn });
       });

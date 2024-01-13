@@ -10,6 +10,6 @@ export default async function getTablesInSchema({
 }): Promise<string[]> {
   return runShell(
     psql(fromDsn),
-    `SELECT table_name FROM information_schema.tables WHERE table_schema='${schema}'`
+    `SELECT table_name FROM information_schema.tables WHERE table_schema='${schema}'`,
   );
 }

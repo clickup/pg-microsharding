@@ -10,7 +10,7 @@ import { log } from "./logging";
 export default async function runShell(
   cmd: string,
   input: string | null,
-  comment?: string
+  comment?: string,
 ): Promise<string[]> {
   if (comment) {
     log(chalk.greenBright(chalk.bold(comment)));
@@ -39,7 +39,7 @@ export default async function runShell(
       })
         .toString()
         .split("\n")
-        .map((line) => line.trim())
+        .map((line) => line.trim()),
     );
   } finally {
     process.removeListener("SIGINT", noop);

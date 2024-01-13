@@ -65,8 +65,8 @@ export async function main(argv: string[]): Promise<boolean> {
             "So effectively, it was a dry-run, and the data still lives in the source DB.\n" +
             "\n" +
             "To activate the schema on the destination and deactivate on the source, run\n" +
-            "the tool with --activate-on-destination flag.\n"
-        )
+            "the tool with --activate-on-destination flag.\n",
+        ),
       );
     }
 

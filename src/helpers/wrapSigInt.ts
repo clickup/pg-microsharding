@@ -1,13 +1,13 @@
 import { log } from "./logging";
 
 export default async function wrapSigInt<T>(
-  func: (throwIfAborted: () => void) => Promise<T>
+  func: (throwIfAborted: () => void) => Promise<T>,
 ): Promise<T> {
   let aborted = false;
 
   const onSigInt = (): void => {
     log(
-      "SIGINT received; aborting and cleaning up the half-migrated destination..."
+      "SIGINT received; aborting and cleaning up the half-migrated destination...",
     );
     aborted = true;
   };

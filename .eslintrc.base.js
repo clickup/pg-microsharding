@@ -54,10 +54,11 @@ module.exports = (projectRoot) => ({
   },
   ignorePatterns: [
     "node_modules",
+    "dist",
     "webpack.config.ts",
     "**/bin/**",
     "*.d.ts",
-    "**/jest.config.js",
+    "*.js",
   ],
   rules: {
     // TODO: slowly enable no-extraneous-dependencies rule below. For now, it's
