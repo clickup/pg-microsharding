@@ -20,7 +20,7 @@ export default async function startCopyingTables({
   await runShell(
     psql(fromDsn),
     `CREATE PUBLICATION ${pubName(schema)} FOR TABLE ${tablesFull.join(",")}`,
-    "Creating source publication"
+    "Creating source publication",
   );
   // We create the replication slot separately only to be able to test the tool
   // on dev: without a replication slot, when using the same database as a
@@ -28,7 +28,7 @@ export default async function startCopyingTables({
   // documented behavior).
   await runShell(
     psql(fromDsn),
-    `SELECT pg_create_logical_replication_slot('${subName(schema)}','pgoutput')`
+    `SELECT pg_create_logical_replication_slot('${subName(schema)}','pgoutput')`,
   );
   await runShell(
     psql(toDsn),
@@ -36,7 +36,7 @@ export default async function startCopyingTables({
       `CONNECTION '${fromDsn}' ` +
       `PUBLICATION ${pubName(schema)} ` +
       "WITH (create_slot=false)",
-    "Creating destination subscription"
+    "Creating destination subscription",
   );
   return tables;
 }

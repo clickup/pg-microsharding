@@ -16,17 +16,17 @@ export default async function cleanup({
   const schemaNameRe = first(
     await runShell(
       psql(dsn),
-      `SELECT ${libSchema()}._sharding_schema_name(${dummyNo})`
-    )
+      `SELECT ${libSchema()}._sharding_schema_name(${dummyNo})`,
+    ),
   )!.replace(new RegExp(`0*${dummyNo}0*`), "\\d+");
   const oldSchemaNameRe = schemaCleanupRe(schemaNameRe);
 
   const allSchemas = await runShell(
     psql(dsn),
-    "SELECT nspname FROM pg_namespace"
+    "SELECT nspname FROM pg_namespace",
   );
   const oldSchemas = allSchemas.filter((schema) =>
-    schema.match(oldSchemaNameRe)
+    schema.match(oldSchemaNameRe),
   );
   if (oldSchemas.length === 0) {
     return;
@@ -42,7 +42,7 @@ export default async function cleanup({
     await runShell(
       psql(dsn),
       `DROP SCHEMA ${schema} CASCADE`,
-      `Dropping redundant schema ${schema}...`
+      `Dropping redundant schema ${schema}...`,
     );
   }
 }

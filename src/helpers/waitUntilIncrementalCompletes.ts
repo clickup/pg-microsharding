@@ -23,7 +23,7 @@ export default async function waitUntilIncrementalCompletes(
     fromDsn: string;
     schema: string;
   },
-  throwIfAborted: () => void
+  throwIfAborted: () => void,
 ): Promise<() => Promise<void>> {
   const tables = await getTablesInSchema({ fromDsn, schema });
   if (tables.length === 0) {
@@ -54,7 +54,7 @@ export default async function waitUntilIncrementalCompletes(
 
     const { lsn: fromLsn } = (
       await fromClient.query<{ lsn: string }>(
-        "SELECT pg_current_wal_insert_lsn() AS lsn"
+        "SELECT pg_current_wal_insert_lsn() AS lsn",
       )
     ).rows[0];
 
@@ -66,11 +66,11 @@ export default async function waitUntilIncrementalCompletes(
              GREATEST($2 - confirmed_flush_lsn, 0) AS gap
            FROM pg_replication_slots
            WHERE slot_name=$1`,
-          [subName(schema), fromLsn]
+          [subName(schema), fromLsn],
         )
       ).rows[0];
       progress(
-        `...waiting for the destination LSN (${confirmedLsn}) >= source LSN (${fromLsn}); gap: ${gap}`
+        `...waiting for the destination LSN (${confirmedLsn}) >= source LSN (${fromLsn}); gap: ${gap}`,
       );
       if (gap.toString() === "0") {
         break;

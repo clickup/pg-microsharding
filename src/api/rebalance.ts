@@ -64,7 +64,7 @@ interface Island {
 export default function rebalance<TShard extends Shard>(
   islands: Map<number, readonly TShard[]>,
   decommissionIslandNos: number[] = [],
-  fractionOfMedianToConsiderEmpty = DEFAULT_FRACTION_OF_MEDIAN_TO_CONSIDER_EMPTY
+  fractionOfMedianToConsiderEmpty = DEFAULT_FRACTION_OF_MEDIAN_TO_CONSIDER_EMPTY,
 ): Array<{ from: number; to: number; shards: TShard[] }> {
   const islandsFrom = new Map<number, Island>(
     [...islands.entries()].map(([no, shards]) => [
@@ -74,19 +74,19 @@ export default function rebalance<TShard extends Shard>(
         sumWeight: sumBy(shards, ({ weight }) => weight),
         shards: new Set(shards),
       },
-    ])
+    ]),
   );
 
   const islandsTo = new Map(
     [...islandsFrom.entries()].map(([no, island]) => [
       no,
       { ...island, shards: new Set([...island.shards]) },
-    ])
+    ]),
   );
   decommissionIslands(islandsTo, decommissionIslandNos);
   const emptyShards = extractEmptyShards(
     islandsTo,
-    fractionOfMedianToConsiderEmpty
+    fractionOfMedianToConsiderEmpty,
   );
   balanceIslands(islandsTo);
   injectShardsUniformly(islandsTo, emptyShards);
@@ -97,13 +97,13 @@ export default function rebalance<TShard extends Shard>(
     [...islandsTo.values()].map(({ no, shards }) => [
       no,
       [...shards] as TShard[],
-    ])
+    ]),
   );
 
   const shardsFromOrder = new Map(
     flatten([...islandsFrom.values()].map(({ shards }) => [...shards])).map(
-      (shard, i) => [shard, i]
-    )
+      (shard, i) => [shard, i],
+    ),
   );
 
   islands.clear();
@@ -112,8 +112,8 @@ export default function rebalance<TShard extends Shard>(
       islandNo,
       sortBy(
         shardsTo.get(islandNo) ?? [],
-        (shard) => shardsFromOrder.get(shard) ?? Infinity
-      )
+        (shard) => shardsFromOrder.get(shard) ?? Infinity,
+      ),
     );
   }
 
@@ -122,7 +122,7 @@ export default function rebalance<TShard extends Shard>(
       from: moves[0].from,
       to: moves[0].to,
       shards: moves.map(({ shard }) => shard as TShard),
-    })
+    }),
   );
 }
 
@@ -137,10 +137,10 @@ function balanceIslands(islands: Map<number, Island>): void {
   const shardsSortedDesc = sortBy(
     flatten(
       [...islands.values()].map((island) =>
-        [...island.shards].map((shard) => [shard, island] as const)
-      )
+        [...island.shards].map((shard) => [shard, island] as const),
+      ),
     ),
-    ([shard]) => -1 * shard.weight
+    ([shard]) => -1 * shard.weight,
   );
 
   const desiredIslandWeight =
@@ -160,7 +160,7 @@ function balanceIslands(islands: Map<number, Island>): void {
         // to OTHER SMALLEST island.
         const islandTo = minBy(
           without([...islands.values()], islandFrom),
-          ({ sumWeight }) => sumWeight
+          ({ sumWeight }) => sumWeight,
         );
         if (islandTo) {
           const islandToNewWeight = islandTo.sumWeight + shard.weight;
@@ -190,7 +190,7 @@ function balanceIslands(islands: Map<number, Island>): void {
         if (bigShardMovedWeight >= shard.weight) {
           const islandTo = minBy(
             without([...islands.values()], islandFrom),
-            ({ sumWeight }) => sumWeight
+            ({ sumWeight }) => sumWeight,
           );
           if (
             islandTo &&
@@ -216,7 +216,7 @@ function balanceIslands(islands: Map<number, Island>): void {
  */
 function decommissionIslands(
   islands: Map<number, Island>,
-  islandNos: number[]
+  islandNos: number[],
 ): void {
   if (islands.size === 0) {
     return;
@@ -232,7 +232,7 @@ function decommissionIslands(
 
   if (islands.size === 0) {
     throw Error(
-      "Can't decommission all islands: we need at least one remaining to put all the shards on"
+      "Can't decommission all islands: we need at least one remaining to put all the shards on",
     );
   }
 
@@ -245,11 +245,11 @@ function decommissionIslands(
  */
 function extractEmptyShards(
   islands: Map<number, Island>,
-  fractionOfMedianToConsiderEmpty: number
+  fractionOfMedianToConsiderEmpty: number,
 ): Shard[] {
   const shardsSortedAsc = sortBy(
     flatten([...islands.values()].map((island) => [...island.shards])),
-    ({ weight }) => weight
+    ({ weight }) => weight,
   );
   if (shardsSortedAsc.length === 0) {
     return [];
@@ -262,7 +262,7 @@ function extractEmptyShards(
   const emptyShards = [];
   for (const island of islands.values()) {
     const empty = [...island.shards].filter(
-      ({ weight }) => weight <= weightThreshold
+      ({ weight }) => weight <= weightThreshold,
     );
     island.shards = new Set(difference([...island.shards], empty));
     emptyShards.push(...empty);
@@ -277,7 +277,7 @@ function extractEmptyShards(
  */
 function injectShardsUniformly(
   islands: Map<number, Island>,
-  shards: Shard[]
+  shards: Shard[],
 ): void {
   const islandList = [...islands.values()];
   for (const shard of shards) {
@@ -292,14 +292,14 @@ function injectShardsUniformly(
  */
 function buildMoves(
   from: Map<number, Island>,
-  to: Map<number, Island>
+  to: Map<number, Island>,
 ): Array<{ from: number; to: number; shard: Shard }> {
   const shardsToIsland = new Map(
     flatten(
       [...to.values()].map((island) =>
-        [...island.shards].map((shard) => [shard, island] as const)
-      )
-    )
+        [...island.shards].map((shard) => [shard, island] as const),
+      ),
+    ),
   );
   return flatten(
     [...from.values()].map((from) =>
@@ -313,9 +313,9 @@ function buildMoves(
                 to: shardsToIsland.get(shard)!.no,
                 shard,
               };
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 }
 
@@ -329,15 +329,15 @@ function score(
     shard: Shard;
     islandFrom: Island;
     islandTo: Island;
-  }
+  },
 ): number {
   return Math.min(
     ...[...islands.values()].map(
       (island) =>
         island.sumWeight -
         (afterMove?.islandFrom === island ? afterMove.shard.weight : 0) +
-        (afterMove?.islandTo === island ? afterMove.shard.weight : 0)
-    )
+        (afterMove?.islandTo === island ? afterMove.shard.weight : 0),
+    ),
   );
 }
 

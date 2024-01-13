@@ -118,7 +118,7 @@ test("synthetic", async () => {
       m2: [3, 4],
       m3: [5, 6],
     },
-    ["m2"]
+    ["m2"],
   );
 
   runSnapshot(
@@ -128,7 +128,7 @@ test("synthetic", async () => {
       m2: [3, 4],
       m3: [5, 6],
     },
-    ["m1", "m2"]
+    ["m1", "m2"],
   );
 
   await expect(
@@ -140,8 +140,8 @@ test("synthetic", async () => {
           m2: [3, 4],
           m3: [5, 6],
         },
-        ["m1", "m2", "m3"]
-      ))()
+        ["m1", "m2", "m3"],
+      ))(),
   ).rejects.toThrow(/all islands/);
 
   runSnapshot("two zero weight and two equal weight", {
@@ -157,7 +157,7 @@ let counter = 0;
 function runSnapshot(
   name: string,
   islandsFrom: Record<string, number[]>,
-  decommissionNames: string[] = []
+  decommissionNames: string[] = [],
 ): void {
   const islandNames = Object.keys(islandsFrom);
 
@@ -165,17 +165,17 @@ function runSnapshot(
     Object.values(islandsFrom).map((weights, islandNo) => [
       islandNo,
       weights.map((weight) => ({ weight })),
-    ])
+    ]),
   );
   const moves = rebalance(
     islands,
-    decommissionNames.map((name) => islandNames.indexOf(name))
+    decommissionNames.map((name) => islandNames.indexOf(name)),
   );
   const islandsTo = Object.fromEntries(
     [...islands.entries()].map(
       ([islandNo, shards]) =>
-        [islandNames[islandNo], shards.map(({ weight }) => weight)] as const
-    )
+        [islandNames[islandNo], shards.map(({ weight }) => weight)] as const,
+    ),
   );
 
   const desiredWeight =
@@ -196,9 +196,9 @@ function runSnapshot(
           ({ from, to, shards }) =>
             `  - ${islandNames[from]}->${islandNames[to]}: [` +
             shards.map(({ weight }) => weight) +
-            "]\n"
+            "]\n",
         )
-        .join("")
+        .join(""),
   ).toMatchSnapshot(`${sprintf("%02d", counter++)}: ${name}`);
 }
 
@@ -209,7 +209,7 @@ function inspectIslands(islands: Record<string, number[]>): string {
       ([islandName, weights]) =>
         `  ${islandName}: sum=${sprintf("%-10d", sum(weights))} ` +
         `(${sprintf("%.2f", (sum(weights) / totalWeight) * 100)}%) ` +
-        `[${weights}]\n`
+        `[${weights}]\n`,
     )
     .join("");
 }

@@ -27,7 +27,7 @@ export default async function waitUntilBackfillCompletes(
     toDsn: string;
     schema: string;
   },
-  throwIfAborted: () => void
+  throwIfAborted: () => void,
 ): Promise<void> {
   while (true) {
     const backfillingTables = (
@@ -37,7 +37,7 @@ export default async function waitUntilBackfillCompletes(
           "FROM pg_subscription_rel " +
           "JOIN pg_subscription ON pg_subscription.oid=srsubid " +
           "JOIN pg_class ON pg_class.oid=srrelid " +
-          `WHERE subname='${subName(schema)}' AND srsubstate<>'r'`
+          `WHERE subname='${subName(schema)}' AND srsubstate<>'r'`,
       )
     ).map((s) => s.split("|") as [string, string]);
     if (backfillingTables.length === 0) {
@@ -58,7 +58,7 @@ export default async function waitUntilBackfillCompletes(
           dsn: toDsn,
           schema,
           table,
-        })
+        }),
       );
       const percent =
         countFrom === 0
@@ -66,7 +66,7 @@ export default async function waitUntilBackfillCompletes(
           : Math.min(100, Math.round((countTo / countFrom) * 100));
       const stateName = STATES[state] ?? state;
       stats.push(
-        `${table} (${stateName}: ${percent}%, ${countTo} of ${countFrom})`
+        `${table} (${stateName}: ${percent}%, ${countTo} of ${countFrom})`,
       );
       throwIfAborted();
     }

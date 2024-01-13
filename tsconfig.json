@@ -9,9 +9,8 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "incremental": true,
-    "lib": ["es2019"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "lib": ["ES2019"],
+    "module": "Node16",
     "noEmitOnError": true,
     "noErrorTruncation": true,
     "noImplicitOverride": true,
@@ -25,7 +24,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2019",
+    "target": "ES2019",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "types": ["node", "jest"]
   }

@@ -17,6 +17,6 @@ export default async function copyDDL({
     `${pgDump(fromDsn)} -n ${schema} | ${psql(toDsn)} --single-transaction`,
     null,
     `Copying DDL for ${schema} ` +
-      `from ${dsnToHost(fromDsn)} to ${dsnToHost(toDsn)}...`
+      `from ${dsnToHost(fromDsn)} to ${dsnToHost(toDsn)}...`,
   );
 }

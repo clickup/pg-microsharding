@@ -15,7 +15,7 @@ export default async function getRowCount({
   table: string;
 }): Promise<number> {
   const firstLine = first(
-    await runShell(psql(dsn), `EXPLAIN SELECT 1 FROM ${schema}.${table}`)
+    await runShell(psql(dsn), `EXPLAIN SELECT 1 FROM ${schema}.${table}`),
   );
   return firstLine?.match(/rows=(\d+)/) ? parseInt(RegExp.$1) : 0;
 }

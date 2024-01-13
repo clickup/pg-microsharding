@@ -41,13 +41,13 @@ export default async function resultCommit({
         `ALTER schema ${schema} RENAME TO ${schemaOld(schema, dateSuffix)}`,
         "COMMIT",
       ]).join("; "),
-      "Renaming & deactivating shard on the source"
+      "Renaming & deactivating shard on the source",
     );
     if (shard !== null) {
       await runShell(
         psql(toDsn),
         `SELECT ${libSchema()}.sharding_ensure_active(${shard})`,
-        "Activating shard on the destination"
+        "Activating shard on the destination",
       );
     }
 
@@ -57,10 +57,10 @@ export default async function resultCommit({
         tables
           .map(
             (table) =>
-              deactivateScript.replace(/\$1/g, `'${schema}.${table}'`) + ";"
+              deactivateScript.replace(/\$1/g, `'${schema}.${table}'`) + ";",
           )
           .join("\n"),
-        "Running custom deactivation script for shard tables"
+        "Running custom deactivation script for shard tables",
       );
     }
   } else {
@@ -68,7 +68,7 @@ export default async function resultCommit({
       psql(toDsn),
       `DROP SCHEMA IF EXISTS ${schemaNew(schema)} CASCADE; ` +
         `ALTER SCHEMA ${schema} RENAME TO ${schemaNew(schema)}`,
-      `Renaming just migrated shard on the destination to ${schemaNew(schema)}`
+      `Renaming just migrated shard on the destination to ${schemaNew(schema)}`,
     );
   }
 }
