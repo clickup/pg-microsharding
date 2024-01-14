@@ -1,3 +1,5 @@
+@clickup/pg-sharding / [Exports](modules.md)
+
 # @clickup/pg-sharding: micro-shards support for PostgreSQL
 
 See also [TS API documentation](https://github.com/clickup/pg-sharding/blob/master/docs/modules.md).

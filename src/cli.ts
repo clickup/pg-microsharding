@@ -4,8 +4,8 @@ import prompts from "prompts";
 import cleanup from "./api/cleanup";
 import move from "./api/move";
 import rebalance from "./api/rebalance";
-import { log } from "./helpers/logging";
-import shellQuote from "./helpers/shellQuote";
+import { log } from "./internal/logging";
+import shellQuote from "./internal/shellQuote";
 
 export { cleanup, move, rebalance, shellQuote };
 

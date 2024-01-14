@@ -1,6 +1,6 @@
 import first from "lodash/first";
-import { libSchema, psql, schemaCleanupRe } from "../helpers/names";
-import runShell from "../helpers/runShell";
+import { libSchema, psql, schemaCleanupRe } from "../internal/names";
+import runShell from "../internal/runShell";
 
 /**
  * Removes old and semi-migrated schemas.
