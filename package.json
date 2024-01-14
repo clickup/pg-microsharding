@@ -18,15 +18,14 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch --preserveWatchOutput",
-    "lint": "eslint . --ext .ts --cache --cache-location dist/.eslintcache",
-    "test": "set -e; bash internal/docker-compose-up.sh; export PGHOST=127.0.0.1 PGPORT=54833 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres; jest",
-    "test:db": "set -e; bash internal/docker-compose-up.sh; export PGHOST=127.0.0.1 PGPORT=54833 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres; for f in sql/__tests__/test_*.sql; do echo == $f; echo; psql -f $f; echo; echo; done",
-    "psql": "PGHOST=127.0.0.1 PGPORT=54833 PGDATABASE=postgres PGUSER=postgres PGPASSWORD=postgres psql",
-    "docs": "echo No docs step.",
-    "clean": "rm -rf dist node_modules yarn.lock package-lock.json pnpm-lock.yaml *.log",
+    "lint": "bash internal/lint.sh",
+    "test": "PGPORT=54833 bash internal/with-docker-compose-up.postgres.sh 'jest && for f in sql/__tests__/test_*.sql; do echo == $f; echo; psql -f $f; echo; echo; done'",
+    "psql": "PGPORT=54833 bash internal/with-docker-compose-up.postgres.sh psql",
+    "docs": "bash internal/docs.sh",
+    "clean": "bash internal/clean.sh",
     "copy-package-to-public-dir": "copy-package-to-public-dir.sh",
     "backport-package-from-public-dir": "backport-package-from-public-dir.sh",
-    "deploy": "npm run build && npm run lint && npm run test && npm publish --access=public"
+    "deploy": "bash internal/deploy.sh"
   },
   "dependencies": {
     "chalk": "^4.1.2",
@@ -61,6 +60,9 @@
     "jest": "^29.7.0",
     "prettier": "3.2.1",
     "ts-jest": "^29.1.1",
+    "typedoc-plugin-markdown": "^3.16.0",
+    "typedoc-plugin-merge-modules": "^5.1.0",
+    "typedoc": "^0.25.2",
     "typescript": "^5.2.2"
   },
   "repository": {

@@ -1,18 +1,18 @@
 import chalk from "chalk";
 import delay from "delay";
 import first from "lodash/first";
-import advanceSequences from "../helpers/advanceSequences";
-import cleanUpPubSub from "../helpers/cleanUpPubSub";
-import copyDDL from "../helpers/copyDDL";
-import { log } from "../helpers/logging";
-import { libSchema, psql } from "../helpers/names";
-import resultAbort from "../helpers/resultAbort";
-import resultCommit from "../helpers/resultCommit";
-import runShell from "../helpers/runShell";
-import startCopyingTables from "../helpers/startCopyingTables";
-import waitUntilBackfillCompletes from "../helpers/waitUntilBackfillCompletes";
-import waitUntilIncrementalCompletes from "../helpers/waitUntilIncrementalCompletes";
-import wrapSigInt from "../helpers/wrapSigInt";
+import advanceSequences from "../internal/advanceSequences";
+import cleanUpPubSub from "../internal/cleanUpPubSub";
+import copyDDL from "../internal/copyDDL";
+import { log } from "../internal/logging";
+import { libSchema, psql } from "../internal/names";
+import resultAbort from "../internal/resultAbort";
+import resultCommit from "../internal/resultCommit";
+import runShell from "../internal/runShell";
+import startCopyingTables from "../internal/startCopyingTables";
+import waitUntilBackfillCompletes from "../internal/waitUntilBackfillCompletes";
+import waitUntilIncrementalCompletes from "../internal/waitUntilIncrementalCompletes";
+import wrapSigInt from "../internal/wrapSigInt";
 
 /**
  * Moves a shard from one master DB to another.
