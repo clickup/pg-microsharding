@@ -25,13 +25,13 @@ Each micro-shard can either be "active" or "inactive".
 The library exposes low-level API for other higher-level tools as PG functions:
 
 - `sharding_list_active_shards()`: returns the list of "active" shards
-- `sharding_ensure_exist()`: allocates a new range micro-shard
+- `sharding_ensure_exist()`: allocates a new range of micro-shards
 - `sharding_ensure_active()`: activates a range of micro-shards
 - `sharding_ensure_inactive()`: deactivates a range of micro-shards
 - `sharding_ensure_absent()`: drops a range of micro-shards
 - `sharding_do_on_each()`: a helper function to run an SQL query on all shards
-- `sharding_debug_fdw_create()`: creates "debug foreign shards schemas" for each host in the list.
-- `sharding_debug_fds_drop()`: drops all debug foreign shards schemas previously created.
+- `sharding_debug_fdw_create()`: creates "debug foreign shards schemas" for each host in the list
+- `sharding_debug_fdw_drop()`: drops all debug foreign shards schemas previously created
 - `sharding_debug_views_create()`: creates "debug views" for tables in all
   micro-shards which unions SELECTs from the same-named tables in all shards
   (not used in production, only for debugging purposes)
