@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION _sharding_debug_fdw_schemas(
+CREATE OR REPLACE FUNCTION microsharding_debug_fdw_schemas_(
   dst_prefix text
 ) RETURNS regnamespace[]
 LANGUAGE sql
@@ -8,8 +8,8 @@ AS $$
   FROM pg_namespace
   WHERE
     nspname LIKE (dst_prefix || '\_%')
-    AND pg_catalog.obj_description(oid) LIKE 'pg_sharding:%'
+    AND pg_catalog.obj_description(oid) LIKE '%sharding:%'
 $$;
 
-COMMENT ON FUNCTION _sharding_debug_fdw_schemas(text)
+COMMENT ON FUNCTION microsharding_debug_fdw_schemas_(text)
   IS 'Returns the list of debug foreign shard schemas existing in the database now.';

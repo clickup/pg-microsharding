@@ -1,5 +1,5 @@
-DROP FUNCTION IF EXISTS sharding_debug_views_create(text);
-CREATE OR REPLACE FUNCTION sharding_debug_views_create(
+DROP FUNCTION IF EXISTS microsharding_debug_views_create(text);
+CREATE OR REPLACE FUNCTION microsharding_debug_views_create(
   dst_schema text = 'public',
   fdw_dst_prefix text = NULL
 ) RETURNS SETOF text
@@ -19,9 +19,9 @@ DECLARE
   existing_hash text;
 BEGIN
   IF fdw_dst_prefix IS NOT NULL THEN
-    schemas := _sharding_debug_fdw_schemas(fdw_dst_prefix);
+    schemas := microsharding_debug_fdw_schemas_(fdw_dst_prefix);
   ELSE
-    schemas := sharding_list_active_shards();
+    schemas := microsharding_list_active_shards();
   END IF;
 
   -- Iterate over all tables; for each table collect all schemas it's in and
@@ -83,7 +83,7 @@ BEGIN
       (SELECT string_agg(quote_ident(c), ', ') FROM unnest(all_columns) c),
       array_to_string(selects, E' UNION ALL\n')
     );
-    hash := 'pg_sharding:' || md5(sql);
+    hash := 'pg-microsharding:' || md5(sql);
 
     -- Update the view only if something is changed.
     existing_hash := '';
@@ -101,9 +101,9 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_debug_views_create(text, text)
+COMMENT ON FUNCTION microsharding_debug_views_create(text, text)
   IS 'Creates debug views, one per table in shards. Each view unions data '
      'from all shards related to the particular table. If the 2nd parameter '
      'is passed, the views are created from debug foreign shard schemas '
-     '(assuming the schemas were generated with sharding_debug_views_create '
+     '(assuming the schemas were generated with microsharding_debug_views_create '
      'previously).';

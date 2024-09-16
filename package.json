@@ -1,7 +1,7 @@
 {
-  "name": "@clickup/pg-sharding",
-  "description": "Micro-shards support for PostgreSQL",
-  "version": "2.10.297",
+  "name": "@clickup/pg-microsharding",
+  "description": "Microshards support for PostgreSQL",
+  "version": "2.12.1",
   "license": "MIT",
   "keywords": [
     "postgresql",
@@ -13,7 +13,7 @@
   "types": "./dist/cli.d.ts",
   "exports": "./dist/cli.js",
   "bin": {
-    "pg-sharding": "./dist/cli.js"
+    "pg-microsharding": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
@@ -68,6 +68,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/clickup/pg-sharding"
+    "url": "git://github.com/clickup/pg-microsharding"
   }
 }

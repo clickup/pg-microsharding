@@ -1,36 +1,45 @@
-# @clickup/pg-sharding: micro-shards support for PostgreSQL
+# @clickup/pg-microsharding: microshards support for PostgreSQL
 
-See also [TS API documentation](https://github.com/clickup/pg-sharding/blob/master/docs/modules.md).
+See also [TS API documentation](https://github.com/clickup/pg-microsharding/blob/master/docs/modules.md).
 
-![CI run](https://github.com/clickup/pg-sharding/actions/workflows/ci.yml/badge.svg?branch=main)
+![CI run](https://github.com/clickup/pg-microsharding/actions/workflows/ci.yml/badge.svg?branch=main)
 
-Each micro-shard is a PG schema with numeric suffix. Micro-shards have the same
+Each microshard is a PG schema with numeric suffix. Microshards have the same
 set of tables with same names; it's up to the higher-level tools to keep the
 schemas of all those tables in sync (e.g. see pg-mig tool).
 
-Micro-shards can be moved from one PG master to another. There is no need to
-stop writes while moving micro-shards: the tool uses PG logical replication to
-stream each micro-shard table's data, and in the very end, acquires a quick
-exclusive lock to finalize the move.
+Microshards can be moved from one PG master to another. There is no need to stop
+writes while moving microshards: the tool uses PG logical replication to stream
+each microshard table's data, and in the very end, acquires a quick exclusive
+lock to finalize the move.
 
-     pg-sharding move
-       --shard=N --from=DSN --to=DSN
-       [--activate-on-destination]
-       [--deactivate-script='SQL $1 SQL']
+Each microshard can either be "active" or "inactive".
 
-Each micro-shard can either be "active" or "inactive".
+The library exposes command-line tool `pg-microsharding`. Some (non-exhaustive)
+list of commands:
 
-The library exposes low-level API for other higher-level tools as PG functions:
+- `pg-microsharding allocate --shards=N-M ...`
+- `pg-microsharding move --shard=N --from=DSN --to=DSN ...`
+- `pg-microsharding cleanup --dsn=DSN`
+- ...
+- run the tool to see other commands and options.
 
-- `sharding_list_active_shards()`: returns the list of "active" shards
-- `sharding_ensure_exist()`: allocates a new range of micro-shards
-- `sharding_ensure_active()`: activates a range of micro-shards
-- `sharding_ensure_inactive()`: deactivates a range of micro-shards
-- `sharding_ensure_absent()`: drops a range of micro-shards
-- `sharding_do_on_each()`: a helper function to run an SQL query on all shards
-- `sharding_debug_fdw_create()`: creates "debug foreign shards schemas" for each host in the list
-- `sharding_debug_fdw_drop()`: drops all debug foreign shards schemas previously created
-- `sharding_debug_views_create()`: creates "debug views" for tables in all
-  micro-shards which unions SELECTs from the same-named tables in all shards
-  (not used in production, only for debugging purposes)
-- `sharding_debug_views_drop()`: drops all of the debug views
+It also provides low-level stored functions API:
+
+- `microsharding_list_active_shards()`: returns the list of "active" shards
+- `microsharding_do_on_each()`: a helper function to run an SQL query on all shards
+- `microsharding_debug_views_create()`: creates "debug views" for tables in all
+  microshards that union SELECTs from the same-named tables in all shards (not
+  used in production, only for debugging purposes)
+- `microsharding_debug_views_drop()`: drops all of the debug views
+- `microsharding_debug_fdw_create()`: creates "debug foreign shards schemas" for
+  each host in the list
+- `microsharding_debug_fdw_drop()`: drops all debug foreign shards schemas
+  previously created
+
+And some lower level APIs:
+
+- `microsharding_ensure_exist()`: allocates a new range of microshards
+- `microsharding_ensure_active()`: activates a range of microshards
+- `microsharding_ensure_inactive()`: deactivates a range of microshards
+- `microsharding_ensure_absent()`: drops a range of microshards

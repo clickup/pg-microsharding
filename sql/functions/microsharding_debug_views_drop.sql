@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sharding_debug_views_drop(
+CREATE OR REPLACE FUNCTION microsharding_debug_views_drop(
   dst_schema text = 'public'
 ) RETURNS SETOF text
 LANGUAGE plpgsql
@@ -12,7 +12,7 @@ BEGIN
     FROM information_schema.views
     WHERE table_schema = dst_schema
   LOOP
-    IF pg_catalog.obj_description(view_full_name::regclass) LIKE 'pg_sharding:%' THEN
+    IF pg_catalog.obj_description(view_full_name::regclass) LIKE '%sharding:%' THEN
       EXECUTE format('DROP VIEW %s', view_full_name);
       RETURN NEXT view_full_name;
     END IF;
@@ -20,5 +20,5 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_debug_views_drop(text)
+COMMENT ON FUNCTION microsharding_debug_views_drop(text)
   IS 'Drops all debug views previously created.';

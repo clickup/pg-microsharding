@@ -1,8 +1,36 @@
-[@clickup/pg-sharding](README.md) / Exports
+[@clickup/pg-microsharding](README.md) / Exports
 
-# @clickup/pg-sharding
+# @clickup/pg-microsharding
 
 ## Functions
+
+### allocate
+
+▸ **allocate**(`«destructured»`): `Promise`\<`void`\>
+
+Ensures that all shards in the range exist on the DSN, then runs a shell
+script (presumably DB migration), and then optionally activates the shards.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `dsn` | `string` |
+| › `from` | `number` |
+| › `to` | `number` |
+| › `migrateCmd` | `string` |
+| › `activate` | `boolean` |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Defined in
+
+src/api/allocate.ts:10
+
+___
 
 ### cleanup
 
@@ -16,6 +44,7 @@ Removes old and semi-migrated schemas.
 | :------ | :------ |
 | `«destructured»` | `Object` |
 | › `dsn` | `string` |
+| › `noOldShards?` | (`oldSchemaNameRe`: `string`) => `Promise`\<`void`\> |
 | › `confirm?` | (`schemas`: `string`[]) => `Promise`\<`boolean`\> |
 
 #### Returns
@@ -24,7 +53,7 @@ Removes old and semi-migrated schemas.
 
 #### Defined in
 
-[src/api/cleanup.ts:8](https://github.com/clickup/pg-sharding/blob/master/src/api/cleanup.ts#L8)
+[src/api/cleanup.ts:8](https://github.com/clickup/pg-microsharding/blob/master/src/api/cleanup.ts#L8)
 
 ___
 
@@ -43,7 +72,7 @@ Moves a shard from one master DB to another.
 | › `fromDsn` | `string` |
 | › `toDsn` | `string` |
 | › `activateOnDestination` | `boolean` |
-| › `deactivateScript?` | `string` |
+| › `deactivateSQL?` | `string` |
 
 #### Returns
 
@@ -51,7 +80,7 @@ Moves a shard from one master DB to another.
 
 #### Defined in
 
-[src/api/move.ts:20](https://github.com/clickup/pg-sharding/blob/master/src/api/move.ts#L20)
+[src/api/move.ts:20](https://github.com/clickup/pg-microsharding/blob/master/src/api/move.ts#L20)
 
 ___
 
@@ -118,13 +147,15 @@ doesn't matter much though, because shards sizes are more or less equal.
 
 #### Defined in
 
-[src/api/rebalance.ts:64](https://github.com/clickup/pg-sharding/blob/master/src/api/rebalance.ts#L64)
+[src/api/rebalance.ts:64](https://github.com/clickup/pg-microsharding/blob/master/src/api/rebalance.ts#L64)
 
 ___
 
 ### main
 
 ▸ **main**(`argv`): `Promise`\<`boolean`\>
+
+CLI script entry point.
 
 #### Parameters
 
@@ -138,4 +169,4 @@ ___
 
 #### Defined in
 
-[src/cli.ts:21](https://github.com/clickup/pg-sharding/blob/master/src/cli.ts#L21)
+[src/cli.ts:39](https://github.com/clickup/pg-microsharding/blob/master/src/cli.ts#L39)

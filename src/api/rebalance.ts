@@ -61,7 +61,7 @@ interface Island {
  * All those trade-offs produce a slightly imbalanced result. In real life, it
  * doesn't matter much though, because shards sizes are more or less equal.
  */
-export default function rebalance<TShard extends Shard>(
+export function rebalance<TShard extends Shard>(
   islands: Map<number, readonly TShard[]>,
   decommissionIslandNos: number[] = [],
   fractionOfMedianToConsiderEmpty = DEFAULT_FRACTION_OF_MEDIAN_TO_CONSIDER_EMPTY,

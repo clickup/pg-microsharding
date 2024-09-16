@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sharding_debug_fdw_drop(
+CREATE OR REPLACE FUNCTION microsharding_debug_fdw_drop(
   dst_prefix text
 ) RETURNS SETOF text
 LANGUAGE plpgsql
@@ -11,7 +11,7 @@ DECLARE
 BEGIN
   SET client_min_messages TO warning;
 
-  FOREACH dst_schema IN ARRAY _sharding_debug_fdw_schemas(dst_prefix) LOOP
+  FOREACH dst_schema IN ARRAY microsharding_debug_fdw_schemas_(dst_prefix) LOOP
     EXECUTE format(
       'DROP SCHEMA %I CASCADE',
       dst_schema
@@ -24,7 +24,7 @@ BEGIN
     WHERE srvname LIKE (dst_prefix || '\_%')
     ORDER BY srvname
   LOOP
-    IF pg_catalog.obj_description(row_oid) LIKE 'pg_sharding:%' THEN
+    IF pg_catalog.obj_description(row_oid) LIKE '%sharding:%' THEN
       EXECUTE format(
         'DROP SERVER %I CASCADE',
         server
@@ -35,5 +35,5 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_debug_fdw_drop(text)
+COMMENT ON FUNCTION microsharding_debug_fdw_drop(text)
   IS 'Drops all debug foreign shards schemas.';

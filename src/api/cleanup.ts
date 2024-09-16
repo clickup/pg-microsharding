@@ -1,22 +1,24 @@
 import first from "lodash/first";
 import { libSchema, psql, schemaCleanupRe } from "../internal/names";
-import runShell from "../internal/runShell";
+import { runShell } from "../internal/runShell";
 
 /**
  * Removes old and semi-migrated schemas.
  */
-export default async function cleanup({
+export async function cleanup({
   dsn,
+  noOldShards,
   confirm,
 }: {
   dsn: string;
+  noOldShards?: (oldSchemaNameRe: string) => Promise<void>;
   confirm?: (schemas: string[]) => Promise<boolean>;
 }): Promise<void> {
   const dummyNo = 101;
   const schemaNameRe = first(
     await runShell(
       psql(dsn),
-      `SELECT ${libSchema()}._sharding_schema_name(${dummyNo})`,
+      `SELECT ${libSchema()}.microsharding_schema_name_(${dummyNo})`,
     ),
   )!.replace(new RegExp(`0*${dummyNo}0*`), "\\d+");
   const oldSchemaNameRe = schemaCleanupRe(schemaNameRe);
@@ -29,6 +31,7 @@ export default async function cleanup({
     schema.match(oldSchemaNameRe),
   );
   if (oldSchemas.length === 0) {
+    await noOldShards?.(oldSchemaNameRe);
     return;
   }
 

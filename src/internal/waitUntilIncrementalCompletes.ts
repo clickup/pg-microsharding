@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import delay from "delay";
 import { Client } from "pg";
-import getTablesInSchema from "./getTablesInSchema";
+import { getTablesInSchema } from "./getTablesInSchema";
 import { log, progress } from "./logging";
 import { subName } from "./names";
 
@@ -15,7 +15,7 @@ import { subName } from "./names";
  * still, because the process will end, PG will disconnect, and the tables will
  * be auto-unlocked.)
  */
-export default async function waitUntilIncrementalCompletes(
+export async function waitUntilIncrementalCompletes(
   {
     fromDsn,
     schema,

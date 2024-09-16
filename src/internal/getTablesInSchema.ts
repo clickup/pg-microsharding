@@ -1,7 +1,7 @@
 import { psql } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
-export default async function getTablesInSchema({
+export async function getTablesInSchema({
   fromDsn,
   schema,
 }: {

@@ -7,7 +7,7 @@ import { log } from "./logging";
  * Runs a shell command passing it an optional input as stdin. Throws on errors.
  * Returns the lines of stdout.
  */
-export default async function runShell(
+export async function runShell(
   cmd: string,
   input: string | null,
   comment?: string,

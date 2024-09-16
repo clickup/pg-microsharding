@@ -20,6 +20,12 @@ export function log(msg: string): void {
   progress.done();
 }
 
+export function print(msg: string): void {
+  progress.done();
+  progressObj(msg);
+  progress.done();
+}
+
 function stripPassword(s: string): string {
   return s.replace(/(\w+\\?:\/\/[^:]+\\?):[^\\@]+\\?@/gs, "$1@");
 }

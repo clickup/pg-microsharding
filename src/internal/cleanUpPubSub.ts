@@ -1,11 +1,11 @@
 import delay from "delay";
 import { psql, pubName, subName } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
 /**
  * Removes all traces of logical replication from the schema.
  */
-export default async function cleanUpPubSub({
+export async function cleanUpPubSub({
   fromDsn,
   toDsn,
   schema,

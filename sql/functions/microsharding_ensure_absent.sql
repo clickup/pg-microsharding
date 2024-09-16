@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sharding_ensure_absent(
+CREATE OR REPLACE FUNCTION microsharding_ensure_absent(
   shard_from integer,
   shard_to integer = NULL
 ) RETURNS SETOF text
@@ -14,7 +14,7 @@ BEGIN
   END IF;
   FOR shard IN
     WITH shards AS (
-      SELECT _sharding_schema_name(n) AS shard
+      SELECT microsharding_schema_name_(n) AS shard
       FROM generate_series(shard_from, shard_to) AS n
     )
     SELECT shards.shard FROM shards
@@ -24,9 +24,9 @@ BEGIN
     EXECUTE format('DROP SCHEMA %I', shard);
     RETURN NEXT shard;
   END LOOP;
-  PERFORM _sharding_ensure_active_shards();
+  PERFORM microsharding_ensure_active_shards_();
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_ensure_absent(integer, integer)
+COMMENT ON FUNCTION microsharding_ensure_absent(integer, integer)
   IS 'Removes EMPTY shards (schemas) in the range shard_from..shard_to (inclusive).';

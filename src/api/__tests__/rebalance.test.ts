@@ -2,7 +2,7 @@ import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import sumBy from "lodash/sumBy";
 import { sprintf } from "sprintf-js";
-import rebalance from "../rebalance";
+import { rebalance } from "../rebalance";
 
 test("real-life", async () => {
   runSnapshot("real-life", {

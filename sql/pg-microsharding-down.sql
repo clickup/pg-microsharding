@@ -1,0 +1,14 @@
+DROP FUNCTION microsharding_active_shards_();
+DROP FUNCTION microsharding_debug_fdw_schemas_(text);
+DROP FUNCTION microsharding_ensure_active_shards_(text[]);
+DROP FUNCTION microsharding_schema_name_(integer);
+DROP FUNCTION microsharding_debug_fdw_create(text, text[]);
+DROP FUNCTION microsharding_debug_fdw_drop(text);
+DROP FUNCTION microsharding_debug_views_create(text, text);
+DROP FUNCTION microsharding_debug_views_drop(text);
+DROP FUNCTION microsharding_do_on_each(text);
+DROP FUNCTION microsharding_ensure_absent(integer, integer);
+DROP FUNCTION microsharding_ensure_active(integer, integer);
+DROP FUNCTION microsharding_ensure_exist(integer, integer);
+DROP FUNCTION microsharding_ensure_inactive(integer, integer);
+DROP FUNCTION microsharding_list_active_shards();

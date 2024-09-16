@@ -1,11 +1,11 @@
-import cleanUpPubSub from "./cleanUpPubSub";
+import { cleanUpPubSub } from "./cleanUpPubSub";
 import { psql } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
 /**
  * Cleans up after the shard migration on failure.
  */
-export default async function resultAbort({
+export async function resultAbort({
   fromDsn,
   toDsn,
   schema,

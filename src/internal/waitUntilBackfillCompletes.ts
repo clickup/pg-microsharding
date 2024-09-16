@@ -1,9 +1,9 @@
 import chalk from "chalk";
 import delay from "delay";
-import getRowCount from "./getRowCount";
+import { getRowCount } from "./getRowCount";
 import { log, progress } from "./logging";
 import { psql, subName } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
 const STATES: Record<string, string | unknown> = {
   i: "initializing",
@@ -17,7 +17,7 @@ const STATES: Record<string, string | unknown> = {
  * Waits until backfill of the destination tables finishes.
  * https://www.postgresql.org/docs/14/catalog-pg-subscription-rel.html
  */
-export default async function waitUntilBackfillCompletes(
+export async function waitUntilBackfillCompletes(
   {
     fromDsn,
     toDsn,

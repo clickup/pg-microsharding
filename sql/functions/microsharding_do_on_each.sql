@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sharding_do_on_each(
+CREATE OR REPLACE FUNCTION microsharding_do_on_each(
   cmd text,
   OUT shard regnamespace,
   OUT row_count text
@@ -10,7 +10,7 @@ DECLARE
   sql text;
 BEGIN
   cmd := trim(cmd);
-  FOREACH shard IN ARRAY sharding_list_active_shards() LOOP
+  FOREACH shard IN ARRAY microsharding_list_active_shards() LOOP
     IF substring(shard::text from '\d+')::integer <> 0 THEN
       BEGIN
         PERFORM set_config('search_path', shard || ',public', true);
@@ -30,5 +30,5 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_do_on_each(text)
+COMMENT ON FUNCTION microsharding_do_on_each(text)
   IS 'Runs an SQL statement one each shard. ATTENTION: this may be dangerous, use with care!';

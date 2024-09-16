@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sharding_debug_fdw_create(
+CREATE OR REPLACE FUNCTION microsharding_debug_fdw_create(
   dst_prefix text,
   src_hosts text[]
 ) RETURNS TABLE (
@@ -26,7 +26,7 @@ BEGIN
     EXECUTE format(
       'COMMENT ON SERVER %I IS %L',
       server,
-      'pg_sharding:' || host
+      'pg-microsharding:' || host
     );
     EXECUTE format(
       'CREATE USER MAPPING FOR CURRENT_USER SERVER %I OPTIONS(user %L)',
@@ -35,7 +35,7 @@ BEGIN
     );
 
     SELECT *
-      FROM public.dblink(server, format('SELECT %I.sharding_list_active_shards()', current_schema())) AS t(schemas text[])
+      FROM public.dblink(server, format('SELECT %I.microsharding_list_active_shards()', current_schema())) AS t(schemas text[])
       INTO schemas;
     FOREACH src_schema IN ARRAY schemas LOOP
       dst_schema := dst_prefix || '_' || src_schema;
@@ -46,7 +46,7 @@ BEGIN
       EXECUTE format(
         'COMMENT ON SCHEMA %I IS %L',
         dst_schema,
-        'pg_sharding:' || host
+        'pg-microsharding:' || host
       );
       EXECUTE format(
         'IMPORT FOREIGN SCHEMA %I FROM SERVER %I INTO %I',
@@ -62,7 +62,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_debug_fdw_create(text, text[])
+COMMENT ON FUNCTION microsharding_debug_fdw_create(text, text[])
   IS 'Created debug foreign shards schemas. For each host in the list, '
      'enumerates all its shards schemas and runs IMPORT FOREIGN SCHEMA '
      'for them adding the prefix to the destination schena''s name.';

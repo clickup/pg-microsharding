@@ -1,21 +1,21 @@
 import compact from "lodash/compact";
-import cleanUpPubSub from "./cleanUpPubSub";
-import getTablesInSchema from "./getTablesInSchema";
+import { cleanUpPubSub } from "./cleanUpPubSub";
+import { getTablesInSchema } from "./getTablesInSchema";
 import { libSchema, psql, schemaNew, schemaOld, shardNo } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
 /**
  * Cleans up after the shard migration on success.
  */
-export default async function resultCommit({
+export async function resultCommit({
   activateOnDestination,
-  deactivateScript,
+  deactivateSQL,
   fromDsn,
   toDsn,
   schema,
 }: {
   activateOnDestination: boolean;
-  deactivateScript?: string;
+  deactivateSQL?: string;
   fromDsn: string;
   toDsn: string;
   schema: string;
@@ -37,7 +37,7 @@ export default async function resultCommit({
       compact([
         "BEGIN",
         shard !== null &&
-          `SELECT ${libSchema()}.sharding_ensure_inactive(${shard})`,
+          `SELECT ${libSchema()}.microsharding_ensure_inactive(${shard})`,
         `ALTER schema ${schema} RENAME TO ${schemaOld(schema, dateSuffix)}`,
         "COMMIT",
       ]).join("; "),
@@ -46,18 +46,18 @@ export default async function resultCommit({
     if (shard !== null) {
       await runShell(
         psql(toDsn),
-        `SELECT ${libSchema()}.sharding_ensure_active(${shard})`,
+        `SELECT ${libSchema()}.microsharding_ensure_active(${shard})`,
         "Activating shard on the destination",
       );
     }
 
-    if (deactivateScript && tables.length > 0) {
+    if (deactivateSQL && tables.length > 0) {
       await runShell(
         psql(fromDsn),
         tables
           .map(
             (table) =>
-              deactivateScript.replace(/\$1/g, `'${schema}.${table}'`) + ";",
+              deactivateSQL.replace(/\$1/g, `'${schema}.${table}'`) + ";",
           )
           .join("\n"),
         "Running custom deactivation script for shard tables",

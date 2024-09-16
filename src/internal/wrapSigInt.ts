@@ -1,6 +1,6 @@
 import { log } from "./logging";
 
-export default async function wrapSigInt<T>(
+export async function wrapSigInt<T>(
   func: (throwIfAborted: () => void) => Promise<T>,
 ): Promise<T> {
   let aborted = false;

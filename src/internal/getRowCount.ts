@@ -1,11 +1,11 @@
 import first from "lodash/first";
 import { psql } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
 /**
  * Returns an estimate for the number of rows in the table.
  */
-export default async function getRowCount({
+export async function getRowCount({
   dsn,
   schema,
   table,

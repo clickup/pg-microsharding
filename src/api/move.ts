@@ -1,41 +1,41 @@
 import chalk from "chalk";
 import delay from "delay";
 import first from "lodash/first";
-import advanceSequences from "../internal/advanceSequences";
-import cleanUpPubSub from "../internal/cleanUpPubSub";
-import copyDDL from "../internal/copyDDL";
+import { advanceSequences } from "../internal/advanceSequences";
+import { cleanUpPubSub } from "../internal/cleanUpPubSub";
+import { copyDDL } from "../internal/copyDDL";
 import { log } from "../internal/logging";
 import { libSchema, psql } from "../internal/names";
-import resultAbort from "../internal/resultAbort";
-import resultCommit from "../internal/resultCommit";
-import runShell from "../internal/runShell";
-import startCopyingTables from "../internal/startCopyingTables";
-import waitUntilBackfillCompletes from "../internal/waitUntilBackfillCompletes";
-import waitUntilIncrementalCompletes from "../internal/waitUntilIncrementalCompletes";
-import wrapSigInt from "../internal/wrapSigInt";
+import { resultAbort } from "../internal/resultAbort";
+import { resultCommit } from "../internal/resultCommit";
+import { runShell } from "../internal/runShell";
+import { startCopyingTables } from "../internal/startCopyingTables";
+import { waitUntilBackfillCompletes } from "../internal/waitUntilBackfillCompletes";
+import { waitUntilIncrementalCompletes } from "../internal/waitUntilIncrementalCompletes";
+import { wrapSigInt } from "../internal/wrapSigInt";
 
 /**
  * Moves a shard from one master DB to another.
  */
-export default async function move({
+export async function move({
   shard,
   fromDsn,
   toDsn,
   activateOnDestination,
-  deactivateScript,
+  deactivateSQL,
 }: {
   shard: number;
   fromDsn: string;
   toDsn: string;
   activateOnDestination: boolean;
-  deactivateScript?: string;
+  deactivateSQL?: string;
 }): Promise<void> {
   let unlock = async (): Promise<void> => {};
   try {
     const schema = first(
       await runShell(
         psql(fromDsn),
-        `SELECT ${libSchema()}._sharding_schema_name(${shard})`,
+        `SELECT ${libSchema()}.microsharding_schema_name_(${shard})`,
       ),
     );
     if (!schema) {
@@ -76,7 +76,7 @@ export default async function move({
     try {
       await resultCommit({
         activateOnDestination,
-        deactivateScript,
+        deactivateSQL,
         fromDsn,
         toDsn,
         schema,

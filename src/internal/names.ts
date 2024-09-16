@@ -1,10 +1,10 @@
-import shellQuote from "./shellQuote";
+import { shellQuote } from "./shellQuote";
 
 export const pubName = (schema: string): string =>
-  `pg_sharding_move_${schema}_pub`;
+  `pg_microsharding_move_${schema}_pub`;
 
 export const subName = (schema: string): string =>
-  `pg_sharding_move_${schema}_sub`;
+  `pg_microsharding_move_${schema}_sub`;
 
 export const pgDump = (fromDsn: string): string =>
   `pg_dump --schema-only ${shellQuote(fromDsn)}`;
@@ -23,6 +23,14 @@ export const schemaNew = (schema: string): string => `${schema}new`;
 export const schemaCleanupRe = (schemaNameRe: string): string =>
   `^(${schemaNameRe})(old_\\d+|old\\d*|new)$`;
 
-export const libSchema = (): string => "sharding";
+export const libSchema = (): string => "microsharding";
 
-export const dsnToHost = (dsn: string): string => new URL(dsn).hostname;
+export const dsnToShort = (fromDsn: string, toDsn: string): string => {
+  const fromUrl = new URL(fromDsn);
+  const toUrl = new URL(toDsn);
+  const [fromStr, toStr] =
+    fromUrl.hostname === toUrl.hostname
+      ? [fromUrl.hostname + fromUrl.pathname, toUrl.hostname + toUrl.pathname]
+      : [fromUrl.hostname, toUrl.hostname];
+  return `from ${fromStr} to ${toStr}`;
+};

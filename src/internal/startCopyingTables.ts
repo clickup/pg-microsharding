@@ -1,12 +1,12 @@
-import getTablesInSchema from "./getTablesInSchema";
+import { getTablesInSchema } from "./getTablesInSchema";
 import { psql, pubName, subName } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
 /**
  * Copies DDL and creates publication/subscription which starts copying the
  * data. The data continues copying in background.
  */
-export default async function startCopyingTables({
+export async function startCopyingTables({
   fromDsn,
   toDsn,
   schema,

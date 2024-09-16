@@ -1,12 +1,12 @@
 import compact from "lodash/compact";
 import { psql } from "./names";
-import runShell from "./runShell";
+import { runShell } from "./runShell";
 
 /**
  * Advances all sequences on the destination (including sequences in other
  * schemas), so their values won't conflict with the ones on the source.
  */
-export default async function advanceSequences({
+export async function advanceSequences({
   fromDsn,
   toDsn,
 }: {

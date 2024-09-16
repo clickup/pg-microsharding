@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sharding_ensure_exist(
+CREATE OR REPLACE FUNCTION microsharding_ensure_exist(
   shard_from integer,
   shard_to integer = NULL
 ) RETURNS SETOF regnamespace
@@ -14,7 +14,7 @@ BEGIN
   END IF;
   FOR shard IN
     WITH shards AS (
-      SELECT _sharding_schema_name(n) AS shard
+      SELECT microsharding_schema_name_(n) AS shard
       FROM generate_series(shard_from, shard_to) AS n
     )
     SELECT shards.shard FROM shards
@@ -27,5 +27,5 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION sharding_ensure_exist(integer, integer)
+COMMENT ON FUNCTION microsharding_ensure_exist(integer, integer)
   IS 'Creates shards (schemas) in the range shard_from..shard_to (inclusive).';
