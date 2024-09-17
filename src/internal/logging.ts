@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import logUpdate from "log-update";
 
 const progressObj = logUpdate.create(process.stdout, { showCursor: true });
@@ -24,6 +25,14 @@ export function print(msg: string): void {
   progress.done();
   progressObj(msg);
   progress.done();
+}
+
+export function section(msg: string): void {
+  print(chalk.bold(msg));
+}
+
+export function indent(text: string): string {
+  return text.trimEnd().replace(/^/gm, "  ");
 }
 
 function stripPassword(s: string): string {

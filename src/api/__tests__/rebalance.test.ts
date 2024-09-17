@@ -2,6 +2,7 @@ import flatten from "lodash/flatten";
 import sum from "lodash/sum";
 import sumBy from "lodash/sumBy";
 import { sprintf } from "sprintf-js";
+import { pluralize } from "../../internal/pluralize";
 import { rebalance } from "../rebalance";
 
 test("real-life", async () => {
@@ -190,7 +191,12 @@ function runSnapshot(
       "==>\n" +
       inspectIslands(islandsTo) +
       "===\n" +
-      `  ${sumBy(moves, ({ shards }) => shards.length)} move(s):\n` +
+      "  " +
+      pluralize(
+        sumBy(moves, ({ shards }) => shards.length),
+        "move",
+      ) +
+      ":\n" +
       moves
         .map(
           ({ from, to, shards }) =>

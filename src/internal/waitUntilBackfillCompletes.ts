@@ -39,7 +39,7 @@ export async function waitUntilBackfillCompletes(
           "JOIN pg_class ON pg_class.oid=srrelid " +
           `WHERE subname='${subName(schema)}' AND srsubstate<>'r'`,
       )
-    ).map((s) => s.split("|") as [string, string]);
+    ).map((str) => str.split("|") as [string, string]);
     if (backfillingTables.length === 0) {
       progress.clear();
       break;
@@ -71,7 +71,9 @@ export async function waitUntilBackfillCompletes(
       throwIfAborted();
     }
 
-    progress("...still backfilling:\n" + stats.map((s) => `- ${s}`).join("\n"));
+    progress(
+      "...still backfilling:\n" + stats.map((str) => `- ${str}`).join("\n"),
+    );
     await delay(1000);
     throwIfAborted();
   }

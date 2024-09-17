@@ -20,15 +20,21 @@ Each microshard can either be "active" or "inactive".
 The library exposes command-line tool `pg-microsharding`. Some (non-exhaustive)
 list of commands:
 
+- `pg-microsharding list`
 - `pg-microsharding allocate --shards=N-M ...`
 - `pg-microsharding move --shard=N --from=DSN --to=DSN ...`
-- `pg-microsharding cleanup --dsn=DSN`
+- `pg-microsharding rebalance ...`
+- `pg-microsharding cleanup`
 - ...
-- run the tool to see other commands and options.
+- run the tool to see other commands, options and environment variables.
 
-It also provides low-level stored functions API:
+Exposes a performant stored functions API for microshards discovery (it's
+supposed to be called from all nodes of the cluster from time to time):
 
 - `microsharding_list_active_shards()`: returns the list of "active" shards
+
+It also provides system administration stored functions API:
+
 - `microsharding_do_on_each()`: a helper function to run an SQL query on all shards
 - `microsharding_debug_views_create()`: creates "debug views" for tables in all
   microshards that union SELECTs from the same-named tables in all shards (not

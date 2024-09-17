@@ -2,7 +2,144 @@
 
 # @clickup/pg-microsharding
 
+## Interfaces
+
+- [Shard](interfaces/Shard.md)
+
 ## Functions
+
+### actionAllocate
+
+▸ **actionAllocate**(`args`): `Promise`\<`boolean`\>
+
+Ensures that some shards exist.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `args` | `ParsedArgs` |
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+#### Defined in
+
+src/actions/actionAllocate.ts:9
+
+___
+
+### actionCleanup
+
+▸ **actionCleanup**(`args`): `Promise`\<`boolean`\>
+
+Removes previously moved schema originals from the source database.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `args` | `ParsedArgs` |
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+#### Defined in
+
+src/actions/actionCleanup.ts:11
+
+___
+
+### actionList
+
+▸ **actionList**(`args`): `Promise`\<`boolean`\>
+
+Shows the list of microshards and their weights.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `args` | `ParsedArgs` |
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+#### Defined in
+
+src/actions/actionList.ts:16
+
+___
+
+### calcIslandWeights
+
+▸ **calcIslandWeights**(`«destructured»`): `Promise`\<\{ `islandNosToDsn`: `Map`\<`number`, `string`\> ; `islands`: `Map`\<`number`, `NonNullable`\<`Awaited`\<`ReturnType`\<typeof [`weights`](modules.md#weights)\>\>\>\>  }\>
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `dsns` | `string`[] |
+| › `weightSql` | `undefined` \| `string` |
+| › `includeIsolatedShard0` | `boolean` |
+
+#### Returns
+
+`Promise`\<\{ `islandNosToDsn`: `Map`\<`number`, `string`\> ; `islands`: `Map`\<`number`, `NonNullable`\<`Awaited`\<`ReturnType`\<typeof [`weights`](modules.md#weights)\>\>\>\>  }\>
+
+#### Defined in
+
+src/actions/actionList.ts:92
+
+___
+
+### actionMove
+
+▸ **actionMove**(`args`): `Promise`\<`boolean`\>
+
+Moves a shard from one database to another with no downtime.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `args` | `ParsedArgs` |
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+#### Defined in
+
+src/actions/actionMove.ts:11
+
+___
+
+### actionRebalance
+
+▸ **actionRebalance**(`args`): `Promise`\<`boolean`\>
+
+Runs a series of shard modes, concurrently, using TMUX if available.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `args` | `ParsedArgs` |
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+#### Defined in
+
+src/actions/actionRebalance.ts:27
+
+___
 
 ### allocate
 
@@ -28,7 +165,7 @@ script (presumably DB migration), and then optionally activates the shards.
 
 #### Defined in
 
-src/api/allocate.ts:10
+[src/api/allocate.ts:10](https://github.com/clickup/pg-microsharding/blob/master/src/api/allocate.ts#L10)
 
 ___
 
@@ -131,7 +268,7 @@ doesn't matter much though, because shards sizes are more or less equal.
 
 | Name | Type |
 | :------ | :------ |
-| `TShard` | extends `Shard` |
+| `TShard` | extends [`Shard`](interfaces/Shard.md) |
 
 #### Parameters
 
@@ -151,11 +288,35 @@ doesn't matter much though, because shards sizes are more or less equal.
 
 ___
 
+### weights
+
+▸ **weights**(`«destructured»`): `Promise`\<\{ `weight`: `number` ; `unit`: `string` \| `undefined` ; `schema`: `string` ; `no`: `number`  }[] \| ``null``\>
+
+Similar tp listActiveSchemas(), but also returns the weight of each
+microshard and its number.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `«destructured»` | `Object` |
+| › `dsn` | `string` |
+| › `weightSql` | `undefined` \| `string` |
+| › `includeIsolatedShard0` | `boolean` |
+
+#### Returns
+
+`Promise`\<\{ `weight`: `number` ; `unit`: `string` \| `undefined` ; `schema`: `string` ; `no`: `number`  }[] \| ``null``\>
+
+#### Defined in
+
+src/api/weights.ts:10
+
+___
+
 ### main
 
 ▸ **main**(`argv`): `Promise`\<`boolean`\>
-
-CLI script entry point.
 
 #### Parameters
 
@@ -169,4 +330,4 @@ CLI script entry point.
 
 #### Defined in
 
-[src/cli.ts:39](https://github.com/clickup/pg-microsharding/blob/master/src/cli.ts#L39)
+[src/cli.ts:67](https://github.com/clickup/pg-microsharding/blob/master/src/cli.ts#L67)

@@ -1,4 +1,4 @@
-import { dsnToShort as dsnFromToMsg, pgDump, psql } from "./names";
+import { dsnFromToShort as dsnFromToMsg, pgDump, psql } from "./names";
 import { runShell } from "./runShell";
 
 /**

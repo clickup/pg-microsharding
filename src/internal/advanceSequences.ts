@@ -22,7 +22,7 @@ export async function advanceSequences({
         "FROM information_schema.sequences " +
         "ORDER BY 1",
     )
-  ).map((s) => s.split("|") as [string, string]);
+  ).map((str) => str.split("|") as [string, string]);
   const toSequences = await runShell(
     psql(toDsn),
     "SELECT sequence_schema || '.' || sequence_name FROM information_schema.sequences",

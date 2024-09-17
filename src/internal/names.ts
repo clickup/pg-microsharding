@@ -25,7 +25,12 @@ export const schemaCleanupRe = (schemaNameRe: string): string =>
 
 export const libSchema = (): string => "microsharding";
 
-export const dsnToShort = (fromDsn: string, toDsn: string): string => {
+export const dsnShort = (dsn: string): string => {
+  const url = new URL(dsn);
+  return url.hostname + url.pathname;
+};
+
+export const dsnFromToShort = (fromDsn: string, toDsn: string): string => {
   const fromUrl = new URL(fromDsn);
   const toUrl = new URL(toDsn);
   const [fromStr, toStr] =

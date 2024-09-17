@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { exec } from "child_process";
 import chalk from "chalk";
 import compact from "lodash/compact";
 import { log } from "./logging";
@@ -24,23 +24,52 @@ export async function runShell(
   const noop = (): void => {};
   process.on("SIGINT", noop);
   try {
-    return compact(
-      execSync(`set -o pipefail; ${cmd}`, {
-        shell: "/bin/bash",
-        stdio: [undefined, undefined, "inherit"],
-        input: input ?? undefined,
-        env: {
-          ...process.env,
-          PGOPTIONS: compact([
-            "--client-min-messages=warning",
-            process.env["PGOPTIONS"],
-          ]).join(" "),
+    return await new Promise((resolve, reject) => {
+      const child = exec(
+        `set -o pipefail; ${cmd}`,
+        {
+          shell: "/bin/bash",
+          env: {
+            ...process.env,
+            PGOPTIONS: compact([
+              "--client-min-messages=warning",
+              process.env["PGOPTIONS"],
+            ]).join(" "),
+          },
         },
-      })
-        .toString()
-        .split("\n")
-        .map((line) => line.trim()),
-    );
+        (error, stdout, stderr) => {
+          if (error) {
+            // Error's message already includes stderr as message suffix, so we
+            // remove it, since we anyways pass stderr through.
+            if (typeof error?.message === "string") {
+              error.message = error.message.trimEnd();
+              stderr = stderr.trimEnd();
+              if (error.message.endsWith(stderr)) {
+                error.message = error.message
+                  .slice(0, -stderr.length)
+                  .trimEnd();
+              }
+            }
+
+            reject(error);
+          } else {
+            resolve(
+              compact(
+                stdout
+                  .toString()
+                  .split("\n")
+                  .map((line) => line.trim()),
+              ),
+            );
+          }
+        },
+      );
+      child.stderr?.pipe(process.stderr);
+      if (input && child.stdin) {
+        child.stdin.write(input);
+        child.stdin.end();
+      }
+    });
   } finally {
     process.removeListener("SIGINT", noop);
   }

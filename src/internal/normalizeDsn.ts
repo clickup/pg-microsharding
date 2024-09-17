@@ -3,7 +3,18 @@
  * throws in case some essential part of the DSN is missing. Tries to use PG*
  * environment variables for the missing parts.
  */
-export function normalizeDsn(dsn: string): string {
+export function normalizeDsn(
+  dsnOrIslandNo: string | undefined,
+  islandDsns?: string[],
+): string | undefined {
+  if (!dsnOrIslandNo) {
+    return undefined;
+  }
+
+  if (islandDsns && dsnOrIslandNo.match(/^\d+$/)) {
+    return normalizeDsn(islandDsns[parseInt(dsnOrIslandNo, 10)]);
+  }
+
   const env = {
     PGUSER: process.env["PGUSER"],
     PGPASSWORD: process.env["PGPASSWORD"],
@@ -14,7 +25,7 @@ export function normalizeDsn(dsn: string): string {
   };
 
   let url: URL;
-  const match = dsn.match(/^\w+:\/\/(.*)$/);
+  const match = dsnOrIslandNo.match(/^\w+:\/\/(.*)$/);
   if (match) {
     // URL class doesn't support username/password fields for custom protocols
     // like "postgresql", so we pretend it's https.
@@ -25,7 +36,7 @@ export function normalizeDsn(dsn: string): string {
       url = new URL(`https://${match[1]}`);
     }
   } else {
-    const parsed = parseDbHostSpec(dsn);
+    const parsed = parseDbHostSpec(dsnOrIslandNo);
     url = new URL(`https://${parsed.host}`);
     url.port = parsed.port ? String(parsed.port) : "";
     url.pathname = parsed.database ? `/${parsed.database}` : "";
@@ -43,7 +54,7 @@ export function normalizeDsn(dsn: string): string {
     url.search += (url.search ? "&" : "") + `sslmode=${env.PGSSLMODE}`;
   }
 
-  const errorPrefix = `Error parsing "${dsn}"`;
+  const errorPrefix = `Error parsing "${dsnOrIslandNo}"`;
   if (!url.username) {
     throw Error(
       `${errorPrefix}: username is missing (pass it or set PGUSER environment variable)`,

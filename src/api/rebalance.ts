@@ -11,7 +11,7 @@ import without from "lodash/without";
 const SHARD_WEIGHT_MOVE_FROM_OVERLOADED_TO_OVERLOADED_FACTOR = 0.75;
 const DEFAULT_FRACTION_OF_MEDIAN_TO_CONSIDER_EMPTY = 0.1;
 
-interface Shard {
+export interface Shard {
   weight: number;
 }
 
