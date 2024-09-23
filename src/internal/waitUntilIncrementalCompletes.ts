@@ -4,6 +4,7 @@ import { Client } from "pg";
 import { getTablesInSchema } from "./getTablesInSchema";
 import { log, progress } from "./logging";
 import { subName } from "./names";
+import { quoteIdent } from "./quoteIdent";
 
 /**
  * Locks the tables for write and waits until incremental flow to the
@@ -47,7 +48,7 @@ export async function waitUntilIncrementalCompletes(
     throwIfAborted();
 
     log(chalk.greenBright("Locking source tables for WRITE by anyone..."));
-    const query = `LOCK ${tables.join(", ")} IN EXCLUSIVE MODE`;
+    const query = `LOCK ${tables.map(quoteIdent).join(", ")} IN EXCLUSIVE MODE`;
     log(chalk.gray(`$ node-postgres ${fromDsn}\n${query}`));
     await fromClient.query(query);
     throwIfAborted();

@@ -23,7 +23,7 @@ export function log(msg: string): void {
 
 export function print(msg: string): void {
   progress.done();
-  progressObj(msg);
+  progressObj(stripPassword(msg));
   progress.done();
 }
 

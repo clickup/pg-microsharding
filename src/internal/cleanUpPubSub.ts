@@ -1,5 +1,7 @@
 import delay from "delay";
 import { psql, pubName, subName } from "./names";
+import { quoteIdent } from "./quoteIdent";
+import { quoteLiteral } from "./quoteLiteral";
 import { runShell } from "./runShell";
 
 /**
@@ -18,18 +20,18 @@ export async function cleanUpPubSub({
 }): Promise<void> {
   await runShell(
     psql(toDsn),
-    `DROP SUBSCRIPTION IF EXISTS ${subName(schema)}`,
+    `DROP SUBSCRIPTION IF EXISTS ${quoteIdent(subName(schema))}`,
     quiet ? undefined : "Dropping destination subscription",
   );
   await delay(1000);
   await runShell(
     psql(fromDsn),
     "SELECT pg_drop_replication_slot(slot_name) FROM pg_replication_slots " +
-      `WHERE slot_name='${subName(schema)}'`,
+      `WHERE slot_name=${quoteLiteral(subName(schema))}`,
   );
   await runShell(
     psql(fromDsn),
-    `DROP PUBLICATION IF EXISTS ${pubName(schema)}`,
+    `DROP PUBLICATION IF EXISTS ${quoteIdent(pubName(schema))}`,
     quiet ? undefined : "Dropping source publication",
   );
 }

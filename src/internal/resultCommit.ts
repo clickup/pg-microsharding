@@ -2,6 +2,8 @@ import compact from "lodash/compact";
 import { cleanUpPubSub } from "./cleanUpPubSub";
 import { getTablesInSchema } from "./getTablesInSchema";
 import { libSchema, psql, schemaNew, schemaOld, shardNo } from "./names";
+import { quoteIdent } from "./quoteIdent";
+import { quoteLiteral } from "./quoteLiteral";
 import { runShell } from "./runShell";
 
 /**
@@ -57,7 +59,10 @@ export async function resultCommit({
         tables
           .map(
             (table) =>
-              deactivateSQL.replace(/\$1/g, `'${schema}.${table}'`) + ";",
+              deactivateSQL.replace(
+                /\$1/g,
+                quoteLiteral(`${schema}.${quoteIdent(table)}`),
+              ) + ";",
           )
           .join("\n"),
         "Running custom deactivation script for shard tables",

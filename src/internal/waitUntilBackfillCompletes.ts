@@ -3,6 +3,7 @@ import delay from "delay";
 import { getRowCount } from "./getRowCount";
 import { log, progress } from "./logging";
 import { psql, subName } from "./names";
+import { quoteLiteral } from "./quoteLiteral";
 import { runShell } from "./runShell";
 
 const STATES: Record<string, string | unknown> = {
@@ -37,7 +38,7 @@ export async function waitUntilBackfillCompletes(
           "FROM pg_subscription_rel " +
           "JOIN pg_subscription ON pg_subscription.oid=srsubid " +
           "JOIN pg_class ON pg_class.oid=srrelid " +
-          `WHERE subname='${subName(schema)}' AND srsubstate<>'r'`,
+          `WHERE subname=${quoteLiteral(subName(schema))} AND srsubstate<>'r'`,
       )
     ).map((str) => str.split("|") as [string, string]);
     if (backfillingTables.length === 0) {

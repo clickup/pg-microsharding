@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import type { ParsedArgs } from "minimist";
 import prompts from "prompts";
 import { cleanup } from "../api/cleanup";
@@ -19,7 +20,11 @@ export async function actionCleanup(args: ParsedArgs): Promise<boolean> {
     await cleanup({
       dsn,
       noOldShards: async (oldSchemaNameRe) =>
-        print(`No old shard schemas matching regexp ${oldSchemaNameRe}`),
+        print(
+          chalk.gray(
+            `- No old shard schemas matching regexp ${oldSchemaNameRe}`,
+          ),
+        ),
       confirm: async (schemas) => {
         const response = await prompts({
           type: "text",

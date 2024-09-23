@@ -28,10 +28,22 @@ list of commands:
 - ...
 - run the tool to see other commands, options and environment variables.
 
-Exposes a performant stored functions API for microshards discovery (it's
-supposed to be called from all nodes of the cluster from time to time):
+The tool accepts parameters using the following ways:
 
-- `microsharding_list_active_shards()`: returns the list of "active" shards
+1. Via command line arguments, see built-in help.
+2. Via environment variables: PGUSER, PGPASSWORD, PGHOST, PGPORT, PGDATABASE,
+   PGSSLMODE etc. It also recognizes several additional variables, like PGDSNS
+   and MIGRATE_CMD.
+3. Via `pg-microsharding.config.js` file if it's found in the current folder or
+   below. The file should export an object with environment variable names in
+   keys and strings in values.
+
+The tool exposes a performant PostgreSQL stored functions API for microshards
+discovery (it's supposed to be called from all nodes of the cluster from time to
+time):
+
+- `microsharding.microsharding_list_active_shards()`: returns the list of
+  "active" shards as an array.
 
 It also provides system administration stored functions API:
 

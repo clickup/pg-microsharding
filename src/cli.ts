@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { existsSync } from "fs";
+import { dirname } from "path";
 import chalk from "chalk";
 import minimist from "minimist";
 import { actionAllocate } from "./actions/actionAllocate";
@@ -53,6 +55,10 @@ const USAGE = [
   "DSN format examples (defaults are from standard PG* environment variables):",
   "- postgresql://user:pass@hostname/db?options (all parts are optional)",
   "- hostname:port/db (all parts except hostname are optional)",
+  "",
+  "The tool also tries to find pg-microsharding.config.js file in the current",
+  "and parent directories and, if found, treats its exports as environment",
+  "variables, merging them into process.env.",
 ];
 
 const ACTIONS = {
@@ -65,6 +71,27 @@ const ACTIONS = {
 };
 
 export async function main(argv: string[]): Promise<boolean> {
+  const configs: object[] = [];
+  for (let dir = process.cwd(); dirname(dir) !== dir; dir = dirname(dir)) {
+    const path = `${dir}/pg-microsharding.config.js`;
+    if (existsSync(path)) {
+      const loaded = require(path);
+      configs.push(
+        loaded instanceof Function
+          ? loaded()
+          : loaded.default instanceof Function
+            ? loaded.default()
+            : loaded.default
+              ? loaded.default
+              : loaded,
+      );
+    }
+  }
+
+  for (const config of configs.reverse()) {
+    Object.assign(process.env, config);
+  }
+
   const args = minimist(argv, {
     string: [
       "lib-schema",
@@ -84,6 +111,11 @@ export async function main(argv: string[]): Promise<boolean> {
   const PGDSNS = process.env["PGDSNS"];
   if (!args["dsns"] && !args["dsn"] && PGDSNS) {
     args["dsns"] = PGDSNS;
+  }
+
+  const MIGRATE_CMD = process.env["MIGRATE_CMD"];
+  if (!args["migrate-cmd"] && MIGRATE_CMD) {
+    args["migrate-cmd"] = MIGRATE_CMD;
   }
 
   const action = args._[0] as keyof typeof ACTIONS;

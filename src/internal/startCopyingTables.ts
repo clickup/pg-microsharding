@@ -1,5 +1,7 @@
 import { getTablesInSchema } from "./getTablesInSchema";
 import { psql, pubName, subName } from "./names";
+import { quoteIdent } from "./quoteIdent";
+import { quoteLiteral } from "./quoteLiteral";
 import { runShell } from "./runShell";
 
 /**
@@ -16,10 +18,10 @@ export async function startCopyingTables({
   schema: string;
 }): Promise<string[]> {
   const tables = await getTablesInSchema({ fromDsn, schema });
-  const tablesFull = tables.map((table) => `${schema}.${table}`);
+  const tablesFull = tables.map((table) => `${schema}.${quoteIdent(table)}`);
   await runShell(
     psql(fromDsn),
-    `CREATE PUBLICATION ${pubName(schema)} FOR TABLE ${tablesFull.join(",")}`,
+    `CREATE PUBLICATION ${pubName(schema)} FOR TABLE ${tablesFull.join(", ")}`,
     "Creating source publication",
   );
   // We create the replication slot separately only to be able to test the tool
@@ -28,12 +30,12 @@ export async function startCopyingTables({
   // documented behavior).
   await runShell(
     psql(fromDsn),
-    `SELECT pg_create_logical_replication_slot('${subName(schema)}','pgoutput')`,
+    `SELECT pg_create_logical_replication_slot(${quoteLiteral(subName(schema))}, 'pgoutput')`,
   );
   await runShell(
     psql(toDsn),
     `CREATE SUBSCRIPTION ${subName(schema)} ` +
-      `CONNECTION '${fromDsn}' ` +
+      `CONNECTION ${quoteLiteral(fromDsn)} ` +
       `PUBLICATION ${pubName(schema)} ` +
       "WITH (create_slot=false)",
     "Creating destination subscription",

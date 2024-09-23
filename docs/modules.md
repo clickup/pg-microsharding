@@ -26,7 +26,7 @@ Ensures that some shards exist.
 
 #### Defined in
 
-src/actions/actionAllocate.ts:9
+[src/actions/actionAllocate.ts:9](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionAllocate.ts#L9)
 
 ___
 
@@ -48,7 +48,7 @@ Removes previously moved schema originals from the source database.
 
 #### Defined in
 
-src/actions/actionCleanup.ts:11
+[src/actions/actionCleanup.ts:12](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionCleanup.ts#L12)
 
 ___
 
@@ -70,7 +70,7 @@ Shows the list of microshards and their weights.
 
 #### Defined in
 
-src/actions/actionList.ts:16
+[src/actions/actionList.ts:16](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionList.ts#L16)
 
 ___
 
@@ -93,7 +93,7 @@ ___
 
 #### Defined in
 
-src/actions/actionList.ts:92
+[src/actions/actionList.ts:92](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionList.ts#L92)
 
 ___
 
@@ -115,7 +115,7 @@ Moves a shard from one database to another with no downtime.
 
 #### Defined in
 
-src/actions/actionMove.ts:11
+[src/actions/actionMove.ts:11](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionMove.ts#L11)
 
 ___
 
@@ -137,7 +137,7 @@ Runs a series of shard modes, concurrently, using TMUX if available.
 
 #### Defined in
 
-src/actions/actionRebalance.ts:27
+[src/actions/actionRebalance.ts:27](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionRebalance.ts#L27)
 
 ___
 
@@ -310,7 +310,7 @@ microshard and its number.
 
 #### Defined in
 
-src/api/weights.ts:10
+[src/api/weights.ts:10](https://github.com/clickup/pg-microsharding/blob/master/src/api/weights.ts#L10)
 
 ___
 
@@ -330,4 +330,4 @@ ___
 
 #### Defined in
 
-[src/cli.ts:67](https://github.com/clickup/pg-microsharding/blob/master/src/cli.ts#L67)
+[src/cli.ts:73](https://github.com/clickup/pg-microsharding/blob/master/src/cli.ts#L73)

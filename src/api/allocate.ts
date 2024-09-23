@@ -27,10 +27,10 @@ export async function allocate({
   );
 
   log(
-    `Running DB migration shell command "${migrateCmd}".` +
+    `Running DB migration shell command "${migrateCmd}"...` +
       (activate ? " (Shards will only be activated if it succeeds.)" : ""),
   );
-  const { status } = spawnSync(migrateCmd, { stdio: "inherit" });
+  const { status } = spawnSync(migrateCmd, { shell: true, stdio: "inherit" });
   if (status !== 0) {
     throw "Error detected. NEW SHARDS WERE NOT ACTIVATED!";
   }
