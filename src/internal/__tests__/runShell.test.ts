@@ -8,6 +8,8 @@ beforeEach(() => {
     stderr += v;
     return true;
   });
+  process.stderr.setMaxListeners(1000);
+  process.setMaxListeners(1000);
 });
 
 test("stderr is a part of error if fails", async () => {

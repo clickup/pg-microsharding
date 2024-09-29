@@ -1,7 +1,7 @@
 {
   "name": "@clickup/pg-microsharding",
   "description": "Microshards support for PostgreSQL",
-  "version": "2.12.3",
+  "version": "2.12.4",
   "license": "MIT",
   "keywords": [
     "postgresql",
@@ -16,10 +16,10 @@
     "pg-microsharding": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch --preserveWatchOutput",
+    "build": "bash internal/build.sh",
+    "dev": "bash internal/dev.sh",
     "lint": "bash internal/lint.sh",
-    "test": "PGPORT=54833 bash internal/with-docker-compose-up.postgres.sh 'jest && for f in sql/__tests__/test_*.sql; do echo == $f; echo; psql -f $f; echo; echo; done;'",
+    "test": "PGPORT=54833 bash internal/with-docker-compose-up.postgres.sh 'bash internal/test.sh && for f in sql/__tests__/test_*.sql; do echo == $f; echo; psql -f $f; echo; echo; done;'",
     "psql": "PGPORT=54833 bash internal/with-docker-compose-up.postgres.sh psql",
     "docs": "bash internal/docs.sh",
     "clean": "bash internal/clean.sh",

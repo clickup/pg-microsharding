@@ -70,7 +70,7 @@ Shows the list of microshards and their weights.
 
 #### Defined in
 
-[src/actions/actionList.ts:16](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionList.ts#L16)
+[src/actions/actionList.ts:27](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionList.ts#L27)
 
 ___
 
@@ -93,7 +93,7 @@ ___
 
 #### Defined in
 
-[src/actions/actionList.ts:92](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionList.ts#L92)
+[src/actions/actionList.ts:176](https://github.com/clickup/pg-microsharding/blob/master/src/actions/actionList.ts#L176)
 
 ___
 
@@ -290,10 +290,14 @@ ___
 
 ### weights
 
-▸ **weights**(`«destructured»`): `Promise`\<\{ `weight`: `number` ; `unit`: `string` \| `undefined` ; `schema`: `string` ; `no`: `number`  }[] \| ``null``\>
+▸ **weights**(`«destructured»`): `Promise`\<\{ `weightColName`: `string` ; `weight`: `number` ; `unit`: `string` \| `undefined` ; `other`: `Record`\<`string`, `string`\> ; `schema`: `string` ; `no`: `number`  }[] \| ``null``\>
 
-Similar tp listActiveSchemas(), but also returns the weight of each
+Similar to listActiveSchemas(), but also returns the weight of each
 microshard and its number.
+
+Returns null in case this DSN needs to be excluded by the caller completely
+(e.g. when includeIsolatedShard0=false, and it's an isolated island with
+shard 0).
 
 #### Parameters
 
@@ -306,11 +310,11 @@ microshard and its number.
 
 #### Returns
 
-`Promise`\<\{ `weight`: `number` ; `unit`: `string` \| `undefined` ; `schema`: `string` ; `no`: `number`  }[] \| ``null``\>
+`Promise`\<\{ `weightColName`: `string` ; `weight`: `number` ; `unit`: `string` \| `undefined` ; `other`: `Record`\<`string`, `string`\> ; `schema`: `string` ; `no`: `number`  }[] \| ``null``\>
 
 #### Defined in
 
-[src/api/weights.ts:10](https://github.com/clickup/pg-microsharding/blob/master/src/api/weights.ts#L10)
+[src/api/weights.ts:14](https://github.com/clickup/pg-microsharding/blob/master/src/api/weights.ts#L14)
 
 ___
 
@@ -330,4 +334,4 @@ ___
 
 #### Defined in
 
-[src/cli.ts:73](https://github.com/clickup/pg-microsharding/blob/master/src/cli.ts#L73)
+[src/cli.ts:99](https://github.com/clickup/pg-microsharding/blob/master/src/cli.ts#L99)

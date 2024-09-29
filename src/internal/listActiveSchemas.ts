@@ -1,5 +1,5 @@
-import { libSchema, psql } from "../internal/names";
-import { runShell } from "../internal/runShell";
+import { libSchema, psql } from "./names";
+import { runShell } from "./runShell";
 
 /**
  * Returns the list of active shards on a DSN.

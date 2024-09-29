@@ -14,52 +14,78 @@ import { move } from "./api/move";
 import { rebalance } from "./api/rebalance";
 import { print } from "./internal/logging";
 import { shellQuote } from "./internal/shellQuote";
+import { unindent } from "./internal/unindent";
 
 export { allocate, cleanup, move, rebalance, shellQuote };
 
-const USAGE = [
-  "Usage:",
-  "  pg-microsharding list | ls",
-  "    [--weight-sql='SELECT returning weight with optional unit']",
-  "    [--dsn=DSN | --dsns=DNS1,DSN2,...]",
-  "",
-  "  pg-microsharding allocate",
-  "    --shard=N | --shards=N-M",
-  "    --migrate-cmd='shell command to run migrations'",
-  "    --activate={yes | no}",
-  "    [--dsn=DSN | --dsns=DNS1,DSN2,...]",
-  "",
-  "  pg-microsharding move",
-  "    --shard=N",
-  "    --from=DSN",
-  "    --to=DSN",
-  "    --activate-on-destination={yes | no}",
-  "    [--deactivate-sql='SQL $1 SQL']",
-  "",
-  "  pg-microsharding rebalance",
-  "    --activate-on-destination={yes | no}",
-  "    [--deactivate-sql='SQL $1 SQL']",
-  "    [--weight-sql='SELECT returning weight with optional unit']",
-  "    [--decommission=DSN1,DSN2,...]",
-  "    [--parallelism=N]",
-  "    [--dsn=DSN | --dsns=DNS1,DSN2,...]",
-  "",
-  "  pg-microsharding cleanup",
-  "    [--dsn=DSN | --dsns=DNS1,DSN2,...]",
-  "",
-  "If --dsns is not passed, the tool tries to get it from PGDSNS environment",
-  "variable (comma separated list of DSNs). Also, you may pass duplicated DSNs",
-  "and even DSNs of replicas: the tool will filter them out and remain only",
-  "master DSNs in the list.",
-  "",
-  "DSN format examples (defaults are from standard PG* environment variables):",
-  "- postgresql://user:pass@hostname/db?options (all parts are optional)",
-  "- hostname:port/db (all parts except hostname are optional)",
-  "",
-  "The tool also tries to find pg-microsharding.config.js file in the current",
-  "and parent directories and, if found, treats its exports as environment",
-  "variables, merging them into process.env.",
-];
+const USAGE = unindent(`
+  USAGE
+
+    pg-microsharding list | ls
+      [--weight-sql='SELECT returning weight with optional unit']
+      [--dsn=DSN | --dsns=DNS1,DSN2,...]
+
+    pg-microsharding allocate
+      --shard=N | --shards=N-M
+      --migrate-cmd='shell command to run migrations'
+      --activate={yes | no}
+      [--dsn=DSN | --dsns=DNS1,DSN2,...]
+
+    pg-microsharding move
+      --shard=N
+      --from=DSN
+      --to=DSN
+      --activate-on-destination={yes | no}
+      [--deactivate-sql='SQL $1 SQL']
+
+    pg-microsharding rebalance
+      --activate-on-destination={yes | no}
+      [--deactivate-sql='SQL $1 SQL']
+      [--weight-sql='SELECT returning weight with optional unit']
+      [--decommission=DSN1,DSN2,...]
+      [--parallelism=N]
+      [--dsn=DSN | --dsns=DNS1,DSN2,...]
+
+    pg-microsharding cleanup
+      [--dsn=DSN | --dsns=DNS1,DSN2,...]
+
+  ENVIRONMENT VARIABLES
+
+    The tool receives parameters from command line option, but allows to set
+    defaults for most of them using environment variables.
+
+    Some variables are standard for psql command:
+
+    - PGUSER: default database user
+    - PGPASSWORD: default database password
+    - PGHOST: default database host
+    - PGPORT: default database port
+    - PGDATABASE: default database name
+    - PGSSLMODE: default SSL mode (e.g. "prefer")
+
+    Custom variables:
+
+    - DSNS or PGDSNS: default value for --dsns option, comma-separated list
+      of DSNs (see below)
+    - MIGRATE_CMD: default value for --migrate-cmd option
+    - WEIGHT_SQL: default value for --weight-sql option
+    - DEACTIVATE_SQL: default value for --deactivate-sql option
+
+  DSN AND ADDRESSING DATABASES
+
+    Option --dsns, if required, should be a comma separated list of DSNs.
+    Also, you may pass duplicated DSNs and even DSNs of replicas: the tool
+    will filter them out and remain only master DSNs in the list.
+
+    DSN format examples (parts defaults are from environment variables):
+
+    - postgresql://user:pass@hostname/db?options (all parts are optional)
+    - hostname:port/db (all parts except hostname are optional)
+
+    The tool also tries to find pg-microsharding.config.js file in the current
+    and parent directories and, if found, treats its exports as environment
+    variables, merging them into process.env.
+`);
 
 const ACTIONS = {
   allocate: actionAllocate,
@@ -108,9 +134,9 @@ export async function main(argv: string[]): Promise<boolean> {
     ],
   });
 
-  const PGDSNS = process.env["PGDSNS"];
-  if (!args["dsns"] && !args["dsn"] && PGDSNS) {
-    args["dsns"] = PGDSNS;
+  const DSNS = process.env["PGDSNS"] || process.env["DSNS"];
+  if (!args["dsns"] && !args["dsn"] && DSNS) {
+    args["dsns"] = DSNS;
   }
 
   const MIGRATE_CMD = process.env["MIGRATE_CMD"];
@@ -118,13 +144,28 @@ export async function main(argv: string[]): Promise<boolean> {
     args["migrate-cmd"] = MIGRATE_CMD;
   }
 
+  const WEIGHT_SQL = process.env["WEIGHT_SQL"];
+  if (!args["weight-sql"] && WEIGHT_SQL) {
+    args["weight-sql"] = WEIGHT_SQL;
+  }
+
+  const DEACTIVATE_SQL = process.env["DEACTIVATE_SQL"];
+  if (!args["deactivate-sql"] && DEACTIVATE_SQL) {
+    args["deactivate-sql"] = DEACTIVATE_SQL;
+  }
+
   const action = args._[0] as keyof typeof ACTIONS;
+  if (!action) {
+    // eslint-disable-next-line no-console
+    console.log(USAGE);
+    return true;
+  }
+
   if (action in ACTIONS) {
     return ACTIONS[action](args);
-  } else {
-    print(USAGE.join("\n"));
-    return false;
   }
+
+  throw `Unknown action: ${action}`;
 }
 
 if (require.main === module) {
